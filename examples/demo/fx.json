@@ -1,0 +1,338 @@
+[
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "AUDEUR",
+        "spot": 0.611111,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 6.5907
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair AUDEUR appearing in uni.json.",
+        "flipId": "f459a4e892d04eacbc17bd53"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "AUDGBP",
+        "spot": 0.519685,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 5.2068
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair AUDGBP appearing in uni.json.",
+        "flipId": "badaff5e72e641d68e2b33c3"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "AUDHKD",
+        "spot": 5.15625,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 9.2075
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair AUDHKD appearing in uni.json.",
+        "flipId": "de6887566a27444a89283221"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "AUDJPY",
+        "spot": 97.777778,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 4.5795
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair AUDJPY appearing in uni.json.",
+        "flipId": "0afe38700b0841db9f00434d"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "AUDSGD",
+        "spot": 0.891892,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 8.2871
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair AUDSGD appearing in uni.json.",
+        "flipId": "62e4c39413c44cada2432aed"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "AUDUSD",
+        "spot": 0.66,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 6.9255
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair AUDUSD appearing in uni.json.",
+        "flipId": "a2775c6fc8b6411fb49abf6e"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "EURGBP",
+        "spot": 0.850394,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 4.464
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair EURGBP appearing in uni.json.",
+        "flipId": "373f00199aa14fec9e7959f0"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "EURHKD",
+        "spot": 8.4375,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 8.0595
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair EURHKD appearing in uni.json.",
+        "flipId": "e6a8abb580f94e9dbdab7930"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "EURJPY",
+        "spot": 160.0,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 4.3
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair EURJPY appearing in uni.json.",
+        "flipId": "65169d5db6144702be4b6490"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "EURSGD",
+        "spot": 1.459459,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 7.4692
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair EURSGD appearing in uni.json.",
+        "flipId": "6706c151deb24fdb81506375"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "EURUSD",
+        "spot": 1.08,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 4.5588
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair EURUSD appearing in uni.json.",
+        "flipId": "c347eca300124725b9a528aa"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "GBPHKD",
+        "spot": 9.921875,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 4.7257
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair GBPHKD appearing in uni.json.",
+        "flipId": "340529a7ec514e6482d126ee"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "GBPJPY",
+        "spot": 188.148148,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 7.3962
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair GBPJPY appearing in uni.json.",
+        "flipId": "44ee9e960b424feba36e9387"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "GBPSGD",
+        "spot": 1.716216,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 10.6148
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair GBPSGD appearing in uni.json.",
+        "flipId": "f4bf11c9cf92469f9c391448"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "GBPUSD",
+        "spot": 1.27,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 4.9904
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair GBPUSD appearing in uni.json.",
+        "flipId": "78749a948bfc455391937019"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "HKDJPY",
+        "spot": 18.962963,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 5.7859
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair HKDJPY appearing in uni.json.",
+        "flipId": "74ef020accbe4ff6a8675fd8"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "HKDSGD",
+        "spot": 0.172973,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 9.0195
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair HKDSGD appearing in uni.json.",
+        "flipId": "58fe27427d9d45a48caea897"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "HKDUSD",
+        "spot": 0.128,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 11.5817
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair HKDUSD appearing in uni.json.",
+        "flipId": "6043722ea62a4bc9883d1466"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "JPYSGD",
+        "spot": 0.009122,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 8.6168
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair JPYSGD appearing in uni.json.",
+        "flipId": "39b93aa3ce0242f89da4747e"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "JPYUSD",
+        "spot": 0.00675,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 7.1734
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair JPYUSD appearing in uni.json.",
+        "flipId": "dd1530c281a34c04ab8a8ff3"
+    },
+    {
+        "versionTimestamp": "1787884214",
+        "_id": "SGDUSD",
+        "spot": 0.74,
+        "vol": [
+            {
+                "date": 46293,
+                "tenor": "1M",
+                "vol": 11.81
+            }
+        ],
+        "originalLabel": "No",
+        "isLabelFlipped": "No",
+        "remarks": "Generated fx for currency pair SGDUSD appearing in uni.json.",
+        "flipId": "81aa40b5ffad48f8979cfe7a"
+    }
+]

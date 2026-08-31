@@ -6,18 +6,22 @@ extension (``sonicetl._core``) while the Python layer exposes a clean, small API
 Public surface
 --------------
 * ``loads`` / ``dumps`` — orjson-style JSON codecs powered by sonic-rs.
-* ``run`` / ``run_etl`` — run a whole ETL described by the official ETL YAML
-  schema; each record is parsed natively with sonic-rs and the extracted fields
-  are streamed to Parquet (one ``<dataset>.parquet`` per dataset).
-* ``ETLConfig`` / field / dataset builder helpers to construct the YAML schema
+* ``run_pipelines`` — run a set of ETL pipelines described by the official ETL
+  YAML schema (see ``docs/schema.md``). The root document is
+  ``pipelines: [ ... ]``; every pipeline may declare any number of *sources*
+  (inputs) and *datasets* (outputs). Datasets may target any store — parquet
+  file, in-memory duckdb table, or duckdb file — via a duckdb-style URI, and
+  may LEFT JOIN against tables produced earlier in the same call.
+* ``PipelinesConfig`` / ``Pipeline`` / ``Source`` / ``Dataset`` / ``Field`` /
+  ``UnwindRule`` / ``Join`` — thin builder helpers to construct the YAML schema
   programmatically.
 
-Run an ETL::
+Run a set of pipelines::
 
     import sonicetl
-    result = sonicetl.run("examples/etl.yml", "data/uni.json", out_dir="dist")
-    print(result.rows)   # {"instrument_raw": 150000, "instrument_master": ..., ...}
-    print(result.timing) # [{step, ms}, ...]
+    result = sonicetl.run_pipelines("examples/demo/pipelines.yml")
+    print(result.rows)    # {"spot": 12, "products": 36}
+    print(result.timing)  # [{step, ms}, ...]
 """
 
 from __future__ import annotations
@@ -35,12 +39,15 @@ __all__ = [
     "__version__",
     "loads",
     "dumps",
-    "run",
-    "run_etl",
-    "ETLConfig",
+    "run_pipelines",
+    "PipelinesConfig",
+    "Pipeline",
+    "Source",
+    "Output",
     "Dataset",
-    "FieldSpec",
+    "Field",
     "UnwindRule",
+    "Join",
     "EtlResult",
     "ETL_SCHEMA",
 ]
@@ -91,40 +98,19 @@ OPT_STRICT_INTEGER = 512
 
 
 # ---------------------------------------------------------------------------
-# ETL schema objects (official ETL YAML schema)
+# ETL schema objects (official ETL YAML schema, see docs/schema.md)
 # ---------------------------------------------------------------------------
 @dataclass
-class UnwindRule:
-    """A single unwind rule for an ``unwound`` dataset.
-
-    When ``condition`` holds, the array selected by ``unwind_path`` is "unwound":
-    one output row is produced per array element, and each element is exposed to
-    field expressions under ``output_alias`` (e.g. ``$.symbol``).
-    """
-
-    name: str
-    condition: str
-    unwind_path: str
-    output_alias: str
-
-    def to_dict(self) -> Dict[str, str]:
-        return {
-            "name": self.name,
-            "condition": self.condition,
-            "unwind_path": self.unwind_path,
-            "output_alias": self.output_alias,
-        }
-
-
-@dataclass
-class FieldSpec:
+class Field:
     """A single output column: ``name`` + a field ``expression``.
 
-    Expression syntax (see README):
-    * ``$`` or ``$a.b[0]``          JSON-path addressing.
-    * ``coalesce(a, b, 'DEF')``     first non-null.
+    Expression syntax (see README / docs/schema.md):
+    * ``$`` or ``$a.b[0]``           JSON-path addressing.
+    * ``{sourceName.}path``          cross-source projection (bare path = default source).
+    * ``coalesce(a, b, 'DEF')``      first non-null.
     * ``cast(x as double|integer|string)``  typed coercion.
-    * ``to_json_string(x)``         re-serialize a sub-node.
+    * ``alias.col`` / ``cast(alias.col as TYPE)``  joined-column access.
+    * ``to_json_string(x)``          re-serialize a sub-node.
     * literals: ``'str'``, ``true``, ``false``, ``null``, numbers.
     """
 
@@ -136,95 +122,182 @@ class FieldSpec:
 
 
 @dataclass
-class Dataset:
-    """An output dataset. ``type`` is one of ``raw``, ``master`` or ``unwound``.
+class UnwindRule:
+    """A single unwind rule for an ``unwound`` dataset.
 
-    * ``raw``:  one output row per input record.
-    * ``master``: one output row per input record (typically the canonical,
-      normalized view; same per-record semantics as ``raw``).
-    * ``unwound``: zero-or-more output rows per input record, driven by
-      ``unwind_rules`` (e.g. one row per underlying symbol).
+    When ``condition`` holds, the array selected by ``unwind_path`` is "unwound":
+    one output row is produced per array element, and each element is exposed to
+    field expressions under ``output_alias`` (e.g. ``$.u``). If ``output_alias``
+    is empty, ``name`` is used as the alias.
     """
 
     name: str
-    type: str
-    fields: Sequence[FieldSpec] = field(default_factory=list)
-    unwind_rules: Sequence[UnwindRule] = field(default_factory=list)
+    condition: str
+    unwind_path: str
+    output_alias: str = ""
+
+    def to_dict(self) -> Dict[str, str]:
+        return {
+            "name": self.name,
+            "condition": self.condition,
+            "unwind_path": self.unwind_path,
+            "output_alias": self.output_alias,
+        }
+
+
+@dataclass
+class Join:
+    """A LEFT JOIN of this dataset's rows against a table produced earlier.
+
+    ``target`` is a store URI (``memory://<table>`` or ``duckdb://<file>?table=<t>``).
+    ``left_key`` is an expression evaluated per row against the default source
+    (e.g. ``$.u``); ``right_key`` is the target table's column name. The selected
+    ``columns`` are exposed to field expressions under ``alias``.
+    """
+
+    alias: str
+    target: str
+    left_key: str
+    right_key: str
+    columns: Sequence[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {"name": self.name, "type": self.type}
-        if self.fields:
-            d["fields"] = [f.to_dict() for f in self.fields]
-        if self.unwind_rules:
-            d["unwind_rules"] = [r.to_dict() for r in self.unwind_rules]
+        return {
+            "alias": self.alias,
+            "target": self.target,
+            "left_key": self.left_key,
+            "right_key": self.right_key,
+            "columns": list(self.columns),
+        }
+
+
+@dataclass
+class Output:
+    """A store target. ``uri`` is a duckdb-style URI:
+
+    * ``file:///...`` or a bare path  -> parquet file (or directory when ``partition_by`` is set)
+    * ``memory://<table>``            -> in-memory duckdb table (shared across the call)
+    * ``duckdb://<file>?table=<t>`    -> duckdb file-backed table
+
+    ``format`` is informational for file targets (``parquet`` is the default).
+    """
+
+    uri: str = ""
+    format: str = "parquet"
+    partition_by: Sequence[str] = field(default_factory=list)
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {"uri": self.uri}
+        if self.format:
+            d["format"] = self.format
+        if self.partition_by:
+            d["partition_by"] = list(self.partition_by)
         return d
 
 
 @dataclass
-class ETLConfig:
-    """Programmatic builder for the official ETL YAML schema.
+class Source:
+    """An input. ``uri`` is a duckdb-style store URI:
 
-    Optionally ``output`` can carry ``format`` / ``output_directory`` /
-    ``partition_by`` (accepted for forward compatibility; the native engine
-    currently writes a single Parquet file per dataset).
+    * ``file:///path`` (or a bare path) reads a JSON document (``format: json``,
+      optionally narrowed via ``json_path``) or a parquet file (``format: parquet``).
+    * ``memory://<table>`` / ``duckdb://<file>?table=<t>`` read an existing table
+      from the shared store (e.g. one written by an earlier pipeline).
     """
 
-    pipeline_name: str
-    source_file_path: str
-    source_json_path: Optional[str] = None
-    datasets: List[Dataset] = field(default_factory=list)
-    output_format: str = "parquet"
-    output_directory: str = ""
-    partition_by: Sequence[str] = field(default_factory=list)
+    name: str
+    uri: str
+    format: Optional[str] = None
+    json_path: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {
-            "pipeline_name": self.pipeline_name,
-            "source": {"file_path": self.source_file_path},
-        }
-        if self.source_json_path:
-            d["source"]["json_path"] = self.source_json_path
-        d["datasets"] = [ds.to_dict() for ds in self.datasets]
-        d["output"] = {
-            "format": self.output_format,
-            "output_directory": self.output_directory,
-            "partition_by": list(self.partition_by),
-        }
+        d: Dict[str, Any] = {"name": self.name, "uri": self.uri}
+        if self.format:
+            d["format"] = self.format
+        if self.json_path:
+            d["json_path"] = self.json_path
         return d
+
+
+@dataclass
+class Dataset:
+    """An output dataset. ``type`` is one of ``raw``, ``master`` or ``unwound``.
+
+    * ``raw``:  one output row per input record.
+    * ``master``: one output row per input record (canonical, normalized view).
+    * ``unwound``: zero-or-more output rows per input record, driven by
+      ``unwind_rules`` (e.g. one row per underlying symbol).
+
+    ``source`` names the default input (a ``Source.name``); ``$`` resolves to
+    this source's records. ``to`` is the output store; ``join`` optionally
+    LEFT-JOINs against a previously produced table.
+    """
+
+    name: str
+    type: str
+    source: str = ""
+    to: Optional[Output] = None
+    fields: Sequence[Field] = field(default_factory=list)
+    unwind_rules: Sequence[UnwindRule] = field(default_factory=list)
+    join: Optional[Join] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {"name": self.name, "type": self.type}
+        if self.source:
+            d["source"] = self.source
+        if self.to is not None:
+            d["to"] = self.to.to_dict()
+        if self.fields:
+            d["fields"] = [f.to_dict() for f in self.fields]
+        if self.unwind_rules:
+            d["unwind_rules"] = [r.to_dict() for r in self.unwind_rules]
+        if self.join is not None:
+            d["join"] = self.join.to_dict()
+        return d
+
+
+@dataclass
+class Pipeline:
+    """A named ETL pipeline: any number of sources + any number of datasets."""
+
+    name: str = ""
+    sources: Sequence[Source] = field(default_factory=list)
+    datasets: Sequence[Dataset] = field(default_factory=list)
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        if self.name:
+            d["name"] = self.name
+        if self.sources:
+            d["sources"] = [s.to_dict() for s in self.sources]
+        if self.datasets:
+            d["datasets"] = [ds.to_dict() for ds in self.datasets]
+        return d
+
+
+@dataclass
+class PipelinesConfig:
+    """Programmatic builder for the official ETL YAML schema.
+
+    Example::
+
+        cfg = PipelinesConfig([
+            Pipeline(name="mktDataETL", sources=[Source("spot", "file://spot.json")],
+                     datasets=[Dataset("spot", "raw", to=Output("memory://spot"),
+                                       fields=[Field("name", "$._id")])]),
+        ])
+        result = sonicetl.run_pipelines(cfg)
+    """
+
+    pipelines: Sequence[Pipeline] = field(default_factory=list)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {"pipelines": [p.to_dict() for p in self.pipelines]}
 
     def to_yaml(self) -> str:
         import yaml
 
         return yaml.safe_dump(self.to_dict(), sort_keys=False)
-
-    # convenience helpers ------------------------------------------------
-    def raw(self, name: str, fields: Sequence[tuple]) -> "ETLConfig":
-        self.datasets.append(Dataset(name, "raw", _fields(fields)))
-        return self
-
-    def master(self, name: str, fields: Sequence[tuple]) -> "ETLConfig":
-        self.datasets.append(Dataset(name, "master", _fields(fields)))
-        return self
-
-    def unwound(
-        self,
-        name: str,
-        fields: Sequence[tuple],
-        rules: Sequence[UnwindRule],
-    ) -> "ETLConfig":
-        self.datasets.append(Dataset(name, "unwound", _fields(fields), list(rules)))
-        return self
-
-
-def _fields(specs: Sequence[tuple]) -> List[FieldSpec]:
-    out: List[FieldSpec] = []
-    for item in specs:
-        if isinstance(item, FieldSpec):
-            out.append(item)
-        else:
-            name, expression = item  # (name, expression)
-            out.append(FieldSpec(str(name), str(expression)))
-    return out
 
 
 # ---------------------------------------------------------------------------
@@ -232,73 +305,51 @@ def _fields(specs: Sequence[tuple]) -> List[FieldSpec]:
 # ---------------------------------------------------------------------------
 @dataclass
 class EtlResult:
-    """Outcome of a whole ETL run."""
+    """Outcome of a ``run_pipelines`` call."""
 
     timing: List[Dict[str, Any]]
     datasets: Dict[str, int]
-    records: int
-    out_dir: str
 
     @property
     def rows(self) -> Dict[str, int]:
-        """Alias for ``datasets`` (name -> row count)."""
+        """Alias for ``datasets`` (dataset name -> row count)."""
         return self.datasets
 
     def total_etl_ms(self) -> float:
-        """Sum of parse + extract + write timings (excludes disk read)."""
-        return float(sum(t["ms"] for t in self.timing))
+        """Sum of per-dataset timings (excludes the ``pipeline ... total`` rows)."""
+        return float(
+            sum(t["ms"] for t in self.timing if not str(t["step"]).endswith(" total"))
+        )
 
     def breakdown(self) -> str:
-        labels = {
-            "json parsing": "parse",
-            "lazy extract": "extract",
-            "parquet write": "write",
-        }
-        grouped: Dict[str, float] = {}
-        for t in self.timing:
-            step = t["step"]
-            for label, short in labels.items():
-                if label in step:
-                    grouped[short] = grouped.get(short, 0.0) + float(t["ms"])
-                    break
-            else:  # noqa: PLW0120
-                grouped[step] = grouped.get(step, 0.0) + float(t["ms"])
-        return "  ".join(f"{k}={v:.1f} ms" for k, v in grouped.items())
+        return "  ".join(f"{t['step']}={t['ms']:.1f} ms" for t in self.timing)
 
 
 # ---------------------------------------------------------------------------
 # High-level runner
 # ---------------------------------------------------------------------------
-def run(
-    config: Union[ETLConfig, Dict[str, Any], str, os.PathLike],
-    input: Union[bytes, str, os.PathLike, None] = None,
-    out_dir: Union[str, os.PathLike] = ".",
+def run_pipelines(
+    config: Union[PipelinesConfig, Dict[str, Any], str, os.PathLike],
     *,
     config_yaml: Union[str, bytes, None] = None,
-    input_bytes: Union[bytes, bytearray, memoryview, None] = None,
 ) -> EtlResult:
-    """Run a whole ETL and return an :class:`EtlResult`.
+    """Run a set of ETL pipelines and return an :class:`EtlResult`.
 
     Parameters
     ----------
     config:
-        An :class:`ETLConfig`, a config ``dict``, a path to an ETL YAML file,
-        or a YAML string. As an alternative pass ``config_yaml=...``.
-    input:
-        The JSON document as ``bytes``, or a path to a JSON file. As an
-        alternative pass ``input_bytes=...``.
-    out_dir:
-        Directory that will receive ``<dataset>.parquet`` files.
+        A :class:`PipelinesConfig`, a config ``dict``, a path to a pipelines YAML
+        file, or a YAML string. As an alternative pass ``config_yaml=...``.
 
     Examples
     --------
-    >>> r = sonicetl.run("examples/etl.yml", "data/uni.json", out_dir="dist")
+    >>> r = sonicetl.run_pipelines("examples/demo/pipelines.yml")
     >>> r.rows
-    {'instrument_raw': 150000, 'instrument_master': 150000, ...}
+    {'spot': 12, 'products': 36}
     """
     if config_yaml is not None:
         yaml_text = config_yaml.decode() if isinstance(config_yaml, bytes) else config_yaml
-    elif isinstance(config, ETLConfig):
+    elif isinstance(config, PipelinesConfig):
         yaml_text = config.to_yaml()
     elif isinstance(config, dict):
         import yaml
@@ -310,34 +361,11 @@ def run(
     else:
         yaml_text = str(config)
 
-    if input_bytes is not None:
-        data = bytes(input_bytes)
-    elif input is None:
-        raise ValueError("run() requires `input` (bytes) or `input_bytes`")
-    elif isinstance(input, (bytes, bytearray, memoryview)):
-        data = bytes(input)
-    else:
-        with open(input, "rb") as fh:  # noqa: PTH123
-            data = fh.read()
-
-    out = os.fspath(out_dir)
-    raw = _core.run_etl(yaml_text, data, out)
+    raw = _core.run_pipelines(yaml_text)
     return EtlResult(
-        timing=raw["timing"],
+        timing=list(raw["timing"]),
         datasets=dict(raw["datasets"]),
-        records=int(raw["records"]),
-        out_dir=str(raw["out_dir"]),
     )
-
-
-def run_etl(config_yaml: str, input_bytes: bytes, out_dir: str) -> Dict[str, Any]:
-    """Low-level ETL entrypoint mirroring the Rust core.
-
-    ``config_yaml`` must be a YAML string, ``input_bytes`` the JSON document as
-    ``bytes``. Returns the raw result dict (``timing``, ``datasets``, ...).
-    Prefer :func:`run` for the higher-level API.
-    """
-    return dict(_core.run_etl(config_yaml, bytes(input_bytes), out_dir))
 
 
 def _is_path(value: Union[str, os.PathLike]) -> bool:
@@ -351,25 +379,35 @@ def _is_path(value: Union[str, os.PathLike]) -> bool:
 # Documented ETL YAML schema (kept as data so it can be consumed programmatically)
 # ---------------------------------------------------------------------------
 DOC = """
-pipeline_name: string                         # human-readable pipeline name
-source:
-  file_path: string                           # input JSON path (records array)
-  json_path: string?                          # optional root path into the JSON
-datasets:
-  - name: string                              # output dataset name -> <name>.parquet
-    type: "raw" | "master" | "unwound"        # one output row semantics
-    fields:
-      - name: string                          # output column name
-        expression: string                    # field expression (see README)
-    unwind_rules:                             # only for type=unwound
-      - name: string
-        condition: string                     # e.g. "$.instrumentName CONTAINS 'FCN'"
-        unwind_path: string                   # e.g. "$.KIKOSelect.underlying"
-        output_alias: string                  # exposed as e.g. "$.symbol"
-output:
-  format: "parquet"                           # (informational; parquet is implicit)
-  output_directory: string
-  partition_by: [string]
+pipelines:
+  - name: string                             # human-readable pipeline name
+    sources:
+      - name: string                         # referenced by datasets (`source:`)
+        uri: string                          # file:///memory://duckdb:// store URI
+        format: "json" | "parquet"?          # file sources (default json)
+        json_path: string?                   # optional sub-path of a JSON document
+    datasets:
+      - name: string                         # output dataset name / table name
+        type: "raw" | "master" | "unwound"
+        source: string?                      # default source; `$` = dataset's source
+        to:
+          uri: string                        # file:///memory://duckdb:// target
+          format: string?                    # informational; parquet is default
+          partition_by: [string]?            # Hive partition columns
+        fields:
+          - name: string                     # output column name
+            expression: string               # field expression (see docs/schema.md)
+        unwind_rules:                        # only for type=unwound
+          - name: string
+            condition: string                # e.g. "$.underlyings[0] != ''"
+            unwind_path: string              # e.g. "$.underlyings"
+            output_alias: string             # exposed as e.g. "$.u"
+        join:                                # optional LEFT JOIN
+          alias: string                      # column prefix, e.g. "mkt"
+          target: string                     # store URI of the table to join
+          left_key: string                   # e.g. "$.u" (this dataset's key)
+          right_key: string                  # target table's key column
+          columns: [string]                  # right columns exposed under alias
 """  # noqa: E501
 
 ETL_SCHEMA = DOC
@@ -377,10 +415,9 @@ ETL_SCHEMA = DOC
 
 def main() -> None:  # pragma: no cover - convenience CLI
     if len(sys.argv) < 2:
-        print("usage: python -m sonicetl <etl.yml> <input.json> [out_dir]")
+        print("usage: python -m sonicetl <pipelines.yml>")
         return
-    config, src = sys.argv[1], sys.argv[2]
-    out_dir = sys.argv[3] if len(sys.argv) > 3 else "dist"
-    r = run(config, src, out_dir=out_dir)
+    config = sys.argv[1]
+    r = run_pipelines(config)
     print(r.breakdown())
     print("rows:", r.rows)

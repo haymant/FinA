@@ -13,45 +13,39 @@ mod lazy;
 mod native;
 mod plazy;
 mod sonic;
-
-// mimalloc returns freed pages to the OS aggressively, which keeps RES low when
-// a workload churns many small allocations (e.g. sonic-rs bump arenas).
-#[global_allocator]
-static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+mod store;
 
 use pyo3::exceptions::{PyRuntimeError, PyTypeError, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyList};
 use pyo3::IntoPyObjectExt;
 
-/// Run a whole ETL described by an official ETL YAML schema.
+/// Run a full set of ETL pipelines described by the official ETL YAML schema
+/// (see docs/schema.md). The root key is `pipelines: [ ... ]`; the shared
+/// in-memory store is scoped to a single call so tables produced by an earlier
+/// pipeline are visible to later ones (joins / cross-pipeline references).
 ///
-/// * `config_yaml` — ETL pipeline YAML (see README / schema docs).
-/// * `input` — JSON document bytes (an array of records, or single object).
-/// * `out_dir` — directory receiving one `<dataset>.parquet` per dataset.
+/// * `config_yaml` — pipelines YAML (a YAML string).
 ///
-/// Returns a dict: `{timing: [{step, ms}], datasets: {name: rows}, records, out_dir}`.
+/// Returns a dict: `{timing: [{step, ms}], datasets: {name: rows}}`.
 #[pyfunction]
-#[pyo3(signature = (config_yaml, input, out_dir))]
-fn run_etl(
-    py: Python<'_>,
-    config_yaml: &str,
-    input: &[u8],
-    out_dir: &str,
-) -> PyResult<Py<PyDict>> {
-    let cfg: config::Config = serde_yaml::from_str(config_yaml).map_err(|e| {
+#[pyo3(signature = (config_yaml))]
+fn run_pipelines(py: Python<'_>, config_yaml: &str) -> PyResult<Py<PyDict>> {
+    let cfg: config::PipelinesConfig = serde_yaml::from_str(config_yaml).map_err(|e| {
         PyValueError::new_err(format!("invalid ETL YAML config: {e}"))
     })?;
-    if cfg.datasets.is_empty() {
-        return Err(PyValueError::new_err("config declares no datasets"));
+    if cfg.pipelines.is_empty() {
+        return Err(PyValueError::new_err("config declares no pipelines"));
+    }
+    for p in &cfg.pipelines {
+        if p.datasets.is_empty() {
+            return Err(PyValueError::new_err(
+                "each pipeline must declare at least one dataset",
+            ));
+        }
     }
 
-    let res = plazy::run_lazy_stream(&cfg, input, out_dir, |slice| {
-        let s = std::str::from_utf8(slice).map_err(|_| ())?;
-        let v: sonic_rs::Value = sonic_rs::from_str(s).map_err(|_| ())?;
-        Ok(sonic::Sonic(v))
-    })
-    .map_err(|e| PyRuntimeError::new_err(format!("ETL failed: {e}")))?;
+    let res = plazy::run_pipelines(&cfg).map_err(|e| PyRuntimeError::new_err(format!("ETL failed: {e}")))?;
 
     let timing = PyList::empty(py);
     for (name, ms) in &res.timing {
@@ -66,12 +60,9 @@ fn run_etl(
         datasets.set_item(name, *rows)?;
     }
 
-    let records = res.datasets.first().map(|d| d.1).unwrap_or(0);
     let dict = PyDict::new(py);
     dict.set_item("timing", timing)?;
     dict.set_item("datasets", datasets)?;
-    dict.set_item("records", records)?;
-    dict.set_item("out_dir", out_dir)?;
     Ok(dict.unbind())
 }
 
@@ -181,7 +172,7 @@ fn py_to_son(py: Python<'_>, obj: &Bound<'_, PyAny>) -> PyResult<sonic_rs::Value
 #[pymodule]
 fn _core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
-    m.add_function(wrap_pyfunction!(run_etl, m)?)?;
+    m.add_function(wrap_pyfunction!(run_pipelines, m)?)?;
     m.add_function(wrap_pyfunction!(loads, m)?)?;
     m.add_function(wrap_pyfunction!(dumps, m)?)?;
     Ok(())

@@ -11,3 +11,7 @@ wheels/
 *.egg-info
 *.so
 .venv
+
+# generated ETL output
+examples/demo/out/
+/tmp/

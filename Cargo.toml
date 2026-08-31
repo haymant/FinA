@@ -17,7 +17,13 @@ serde_yaml = "0.9.34"
 parquet = "59.2.0"
 arrow-array = "59.2.0"
 arrow-schema = "59.2.0"
-mimalloc = "0.1.43"
+# NOTE: mimalloc was removed on purpose. Its `#[thread_local]` emitted
+# initial-exec (R_X86_64_TPOFF64) relocations, forcing glibc to statically
+# allocate the module's ~8.6 KB TLS block at dlopen and failing on stock glibc
+# ("cannot allocate memory in static TLS block"). A wheel must have zero IE TLS
+# relocs to import cleanly. See README "Known performance regression (TODO)"
+# for the path back to a faster allocator.
+duckdb = { version = "1.10505.0", features = ["bundled"] }
 
 [profile.release]
 lto = true

@@ -1,0 +1,54 @@
+pipelines:
+  # ---------------------------------------------------------------------
+  # mktDataETL: load the spot reference table into the shared in-memory
+  # duckdb store. Later pipelines can join against it.
+  # ---------------------------------------------------------------------
+  - name: mktDataETL
+    sources:
+      - name: spot
+        uri: file://spot.json
+        format: json
+    datasets:
+      - name: spot
+        type: raw
+        to:
+          uri: memory://spot
+        fields:
+          - {name: name, expression: "$._id"}
+          - {name: spot, expression: "cast($.spot as double)"}
+
+  # ---------------------------------------------------------------------
+  # prodETL: unwind one row per underlying symbol, enrich each row with the
+  # live spot from the in-memory table (LEFT JOIN on symbol), and write a
+  # Hive-partitioned parquet dataset grouped by currency.
+  # ---------------------------------------------------------------------
+  - name: prodETL
+    sources:
+      - name: uni
+        uri: file://uni.json
+        format: json
+    datasets:
+      - name: products
+        type: unwound
+        source: uni
+        to:
+          uri: file://out/products
+          format: parquet
+          partition_by: [currency]
+        unwind_rules:
+          - name: u
+            condition: "$.underlyings[0]"
+            unwind_path: "$.underlyings"
+            output_alias: u
+        join:
+          alias: mkt
+          target: memory://spot
+          left_key: "$.u"
+          right_key: "name"
+          columns: [spot]
+        fields:
+          - {name: instrument_id, expression: "coalesce($.id, $.name)"}
+          - {name: instrument_name, expression: "$.name"}
+          - {name: currency, expression: "coalesce($.currency, 'USD')"}
+          - {name: symbol, expression: "$.u"}
+          - {name: spot, expression: "cast(mkt.spot as double)"}

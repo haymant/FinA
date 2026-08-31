@@ -16,7 +16,7 @@ pub enum ColKind {
 }
 
 /// A single output column: a name plus a typed, nullable list of values.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Column {
     pub name: String,
     pub kind: ColKind,
@@ -83,6 +83,7 @@ impl Column {
 }
 
 /// A temporary cell used while pushing, then coerced to the column type.
+#[derive(Debug, Clone)]
 pub enum Cell {
     Null,
     Str(String),
@@ -262,6 +263,35 @@ impl ParquetSink {
 }
 
 impl Column {
+    /// Human/safe string form of the value at row `i` (used for Hive partition
+    /// paths and for join keys).
+    pub fn cell_str(&self, i: usize) -> Option<String> {
+        match self.kind {
+            ColKind::Str => self.strings.get(i).cloned().flatten(),
+            ColKind::F64 => self.f64s.get(i).cloned().flatten().map(|v| format!("{}", v)),
+            ColKind::I64 => self.i64s.get(i).cloned().flatten().map(|v| v.to_string()),
+            ColKind::Bool => self.bools.get(i).cloned().flatten().map(|v| v.to_string()),
+        }
+    }
+
+    /// Returns a new column containing only the rows at the given indices.
+    pub fn gather(&self, rows: &[usize]) -> Column {
+        let mut c = Column::new(&self.name, self.kind);
+        for &i in rows {
+            c.push(self.get_cell(i));
+        }
+        c
+    }
+
+    pub fn get_cell(&self, i: usize) -> Option<Cell> {
+        match self.kind {
+            ColKind::Str => self.strings.get(i).cloned().flatten().map(Cell::Str),
+            ColKind::F64 => self.f64s.get(i).cloned().flatten().map(Cell::F64),
+            ColKind::I64 => self.i64s.get(i).cloned().flatten().map(Cell::I64),
+            ColKind::Bool => self.bools.get(i).cloned().flatten().map(Cell::Bool),
+        }
+    }
+
     pub fn len(&self) -> usize {
         match self.kind {
             ColKind::Str => self.strings.len(),
@@ -278,4 +308,57 @@ impl Column {
         self.i64s.clear();
         self.bools.clear();
     }
+}
+
+/// Writes `columns` to parquet under a Hive-style directory layout, e.g.
+/// `<base>/name=AAPL/type=FCN/data.parquet`. The partition columns are removed
+/// from the data file (HIVE convention) and expressed as directories. Null
+/// partition values are written as `__HIVE_DEFAULT_PARTITION__`.
+pub fn write_partitioned(base: &str, columns: &[Column], partition_by: &[String]) -> Result<(), String> {
+    if partition_by.is_empty() {
+        return write_parquet(base, columns);
+    }
+    let nrows = columns.first().map(|c| c.len()).unwrap_or(0);
+    if nrows == 0 {
+        return Ok(());
+    }
+    let part_idx: Vec<usize> = partition_by
+        .iter()
+        .map(|k| columns.iter().position(|c| &c.name == k))
+        .collect::<Option<Vec<_>>>()
+        .ok_or_else(|| "partition column not found in dataset columns".to_string())?;
+
+    // group row indices by partition value tuple
+    let mut groups: Vec<(Vec<String>, Vec<usize>)> = Vec::new();
+    for i in 0..nrows {
+        let key: Vec<String> = partition_by
+            .iter()
+            .enumerate()
+            .map(|(j, _)| {
+                let c = &columns[part_idx[j]];
+                c.cell_str(i).unwrap_or_else(|| "__HIVE_DEFAULT_PARTITION__".to_string())
+            })
+            .collect();
+        match groups.iter_mut().find(|(k, _)| *k == key) {
+            Some((_, rows)) => rows.push(i),
+            None => groups.push((key, vec![i])),
+        }
+    }
+
+    for (key, rows) in groups {
+        let mut dir = base.to_string();
+        for (j, cv) in key.iter().enumerate() {
+            dir = format!("{}/{}={}", dir, partition_by[j], cv);
+        }
+        std::fs::create_dir_all(&dir).map_err(|e| format!("mkdir {dir}: {e}"))?;
+        let data_cols: Vec<Column> = columns
+            .iter()
+            .enumerate()
+            .filter(|(i, _)| !part_idx.contains(i))
+            .map(|(_, c)| c.gather(&rows))
+            .collect();
+        let path = format!("{}/data.parquet", dir);
+        write_parquet(&path, &data_cols)?;
+    }
+    Ok(())
 }

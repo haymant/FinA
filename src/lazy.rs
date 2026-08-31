@@ -502,6 +502,36 @@ pub fn expr_kind(expr: &str) -> ColKind {
     ColKind::Str
 }
 
+/// If `expr` is a joined-column projection `<alias>.<col>` (optionally wrapped
+/// in `cast(... as TYPE)`), returns `(col, kind)`. Used to source a field from a
+/// materialized join table rather than from the default JSON source.
+pub fn joined_projection(alias: &str, expr: &str) -> Option<(String, ColKind)> {
+    let e = expr.trim();
+    if e.is_empty() {
+        return None;
+    }
+    let kind = expr_kind(e);
+    let inner = if let Some(rest) = e.strip_prefix("cast(") {
+        let stripped = rest.strip_suffix(')').unwrap_or(rest);
+        match stripped.rfind(" as ") {
+            Some(i) => &stripped[..i],
+            None => stripped,
+        }
+    } else {
+        e
+    };
+    let inner = inner.trim();
+    let prefix = format!("{}.", alias);
+    if let Some(rest) = inner.strip_prefix(&prefix) {
+        let col = rest.trim().split('.').next().unwrap_or("").to_string();
+        if !col.is_empty() {
+            return Some((col, kind));
+        }
+    }
+    None
+}
+
+
 /// Resolves a full JSON path (e.g. `$.KIKOSelect.underlying`) natively, returning
 /// a reference to the node — used to get the unwind array elements.
 pub fn resolve_path<'v, V: NValue>(ctx: Ctx<'v, V>, path: &str) -> Option<&'v V> {
