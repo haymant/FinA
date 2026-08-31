@@ -30,7 +30,7 @@ impl<'a, V: NValue> Ctx<'a, V> {
 
 /// A parsed field value, derived from a native value without ever materializing
 /// a `serde_json::Value` DOM.
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum LazyVal {
     Null,
     Bool(bool),
@@ -119,15 +119,20 @@ pub enum Node {
     Coalesce(Vec<Node>),
     Cast(Box<Node>, ColKind),
     ToJson(Box<Node>),
+    /// `cartesian_product(left, right[, 'l != r'])` — cross-product of the two
+    /// (array) operands, concatenating each pair; optional filter over `l`/`r`.
+    CartProd { left: Box<Node>, right: Box<Node>, cond: Option<String> },
 }
 
 #[derive(Debug)]
 pub enum Seg {
     Key(String),
     Idx(usize),
+    /// `[]` wildcard — fan out over every element of an array.
+    All,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum LazyLit {
     Null,
     Bool(bool),
@@ -149,34 +154,10 @@ pub fn compile(expr: &str) -> Node {
 pub fn eval_node<V: NValue>(n: &Node, ctx: &Ctx<'_, V>) -> LazyVal {
     match n {
         Node::Root => LazyVal::Raw(ctx.raw.to_string()),
-        Node::Path(segs) => {
-            let mut cur: &V = ctx.base;
-            let mut failed = false;
-            let mut first = true;
-            for seg in segs {
-                if failed {
-                    continue;
-                }
-                let alias_hit = match seg {
-                    Seg::Key(k) => first && ctx.alias.map(|a| a == k).unwrap_or(false),
-                    Seg::Idx(_) => false,
-                };
-                if alias_hit {
-                    cur = ctx.elem.unwrap_or(ctx.base);
-                } else {
-                    match descend_seg(cur, seg) {
-                        Some(v) => cur = v,
-                        None => failed = true,
-                    }
-                }
-                first = false;
-            }
-            if failed {
-                LazyVal::Null
-            } else {
-                to_lazy(cur, ctx)
-            }
-        }
+        Node::Path(_) => match resolve_node(n, ctx) {
+            Some(v) => to_lazy(v, ctx),
+            None => LazyVal::Null,
+        },
         Node::Lit(l) => match l {
             LazyLit::Null => LazyVal::Null,
             LazyLit::Bool(b) => LazyVal::Bool(*b),
@@ -195,22 +176,231 @@ pub fn eval_node<V: NValue>(n: &Node, ctx: &Ctx<'_, V>) -> LazyVal {
         }
         Node::Cast(inner, kind) => eval_node(inner, ctx).to_cell(*kind).into_lazy(),
         Node::ToJson(inner) => LazyVal::Str(json_of(&eval_node(inner, ctx))),
+        Node::CartProd { left, right, cond } => {
+            let l = eval_vec(left, ctx);
+            let r = eval_vec(right, ctx);
+            let mut pairs: Vec<String> = Vec::new();
+            for lv in &l {
+                for rv in &r {
+                    if let Some(c) = cond {
+                        if !pair_cond(c, lv, rv) {
+                            continue;
+                        }
+                    }
+                    pairs.push(format!("{}{}", lv, rv));
+                }
+            }
+            LazyVal::Str(json_array(&pairs))
+        }
     }
 }
 
-fn descend_seg<'v, V: NValue>(node: &'v V, seg: &Seg) -> Option<&'v V> {
-    match seg {
-        Seg::Idx(i) => node.get_idx(*i),
-        Seg::Key(k) => {
-            if let Ok(i) = k.parse::<usize>() {
-                if node.is_array() {
-                    return node.get_idx(i);
-                }
-                return None;
+/// Resolves a `Path`/`Root` node to a single native reference (first match for
+/// wildcard paths). Non-wildcard paths use a no-allocation walk.
+fn resolve_node<'v, V: NValue>(n: &Node, ctx: &Ctx<'v, V>) -> Option<&'v V> {
+    match n {
+        Node::Root => Some(ctx.base),
+        Node::Path(segs) => {
+            if segs.iter().any(|s| matches!(s, Seg::All)) {
+                collect_path(ctx, segs).into_iter().next()
+            } else {
+                resolve_single(ctx, segs)
             }
-            node.get(k)
+        }
+        _ => None,
+    }
+}
+
+/// Walks a wildcard-free path (no allocation).
+fn resolve_single<'v, V: NValue>(ctx: &Ctx<'v, V>, segs: &[Seg]) -> Option<&'v V> {
+    let mut cur: &'v V = ctx.base;
+    let mut first = true;
+    for seg in segs {
+        let alias_hit = match seg {
+            Seg::Key(k) => first && ctx.alias.map(|a| a == k).unwrap_or(false),
+            _ => false,
+        };
+        if alias_hit {
+            cur = ctx.elem.unwrap_or(ctx.base);
+        } else {
+            cur = match seg {
+                Seg::Key(k) => cur.get(k)?,
+                Seg::Idx(i) => cur.get_idx(*i)?,
+                Seg::All => return None,
+            };
+        }
+        first = false;
+    }
+    Some(cur)
+}
+
+/// Walks a path, fanning out on `[]` wildcard segments, and returns every
+/// matched native node.
+fn collect_path<'v, V: NValue>(ctx: &Ctx<'v, V>, segs: &[Seg]) -> Vec<&'v V> {
+    let mut nodes: Vec<&'v V> = vec![ctx.base];
+    let mut first = true;
+    for seg in segs {
+        let mut next: Vec<&'v V> = Vec::new();
+        for cur in nodes.iter().copied() {
+            match seg {
+                Seg::All => {
+                    if let Some(len) = cur.array_len() {
+                        for i in 0..len {
+                            if let Some(e) = cur.get_idx(i) {
+                                next.push(e);
+                            }
+                        }
+                    }
+                }
+                Seg::Idx(i) => {
+                    if let Some(e) = cur.get_idx(*i) {
+                        next.push(e);
+                    }
+                }
+                Seg::Key(k) => {
+                    if first && ctx.alias.map(|a| a == k).unwrap_or(false) {
+                        next.push(ctx.elem.unwrap_or(ctx.base));
+                    } else if let Some(e) = cur.get(k) {
+                        next.push(e);
+                    }
+                }
+            }
+        }
+        first = false;
+        nodes = next;
+        if nodes.is_empty() {
+            break;
         }
     }
+    nodes
+}
+
+/// Coerces an operand to a list of strings (array elements or a single value).
+fn eval_vec<V: NValue>(n: &Node, ctx: &Ctx<'_, V>) -> Vec<String> {
+    let mut out = Vec::new();
+    let mut add = |nd: &V| {
+        if nd.is_array() {
+            if let Some(len) = nd.array_len() {
+                for i in 0..len {
+                    if let Some(e) = nd.get_idx(i) {
+                        if let Some(s) = scalar_string(e, ctx) {
+                            out.push(s);
+                        }
+                    }
+                }
+            }
+        } else if let Some(s) = scalar_string(nd, ctx) {
+            out.push(s);
+        }
+    };
+    match n {
+        Node::Root => add(ctx.base),
+        Node::Path(segs) => {
+            if segs.iter().any(|s| matches!(s, Seg::All)) {
+                for nd in collect_path(ctx, segs) {
+                    add(nd);
+                }
+            } else if let Some(nd) = resolve_single(ctx, segs) {
+                add(nd);
+            }
+        }
+        _ => {
+            if let Some(s) = lazy_scalar_string(&eval_node(n, ctx)) {
+                out.push(s);
+            }
+        }
+    }
+    out
+}
+
+fn scalar_string<V: NValue>(v: &V, ctx: &Ctx<'_, V>) -> Option<String> {
+    lazy_scalar_string(&to_lazy(v, ctx))
+}
+
+fn lazy_scalar_string(v: &LazyVal) -> Option<String> {
+    match v {
+        LazyVal::Null => None,
+        LazyVal::Bool(b) => Some(if *b { "true" } else { "false" }.to_string()),
+        LazyVal::I64(i) => Some(i.to_string()),
+        LazyVal::U64(u) => Some(u.to_string()),
+        LazyVal::F64(f) => Some(f.to_string()),
+        LazyVal::Str(s) => Some(s.clone()),
+        LazyVal::Raw(r) => Some(r.clone()),
+    }
+}
+
+/// Evaluates a cartesian-product pair filter (`l`/`r` are the two pair values).
+/// Supported forms: `l != r`, `l = r`, `l == r`, `l CONTAINS 'txt'` (either side
+/// may come first, and either side may be compared to a literal).
+fn pair_cond(cond: &str, l: &str, r: &str) -> bool {
+    let t = cond.trim();
+    let lower = t.to_lowercase();
+    if let Some(ci) = lower.find("contains") {
+        let pre = t[..ci].trim().to_lowercase();
+        let post = t[ci + "contains".len()..].trim().trim_matches('\'');
+        return match pre.as_str() {
+            "l" => l.contains(post),
+            "r" => r.contains(post),
+            _ => true,
+        };
+    }
+    let op = if lower.contains("!=") {
+        "!="
+    } else if lower.contains("==") {
+        "=="
+    } else if lower.contains('=') {
+        "="
+    } else {
+        return true;
+    };
+    let idx = t.find(op).unwrap();
+    let a = t[..idx].trim().to_lowercase();
+    let b = t[idx + op.len()..].trim().trim_matches('\'').to_lowercase();
+    let av = match a.as_str() {
+        "l" => l.to_lowercase(),
+        "r" => r.to_lowercase(),
+        _ => a,
+    };
+    let bv = match b.as_str() {
+        "l" => l.to_lowercase(),
+        "r" => r.to_lowercase(),
+        _ => b,
+    };
+    match op {
+        "!=" => av != bv,
+        _ => av == bv,
+    }
+}
+
+/// Serializes a list of strings as a JSON array (e.g. `["HKDUSD","SGDUSD"]`).
+fn json_array(items: &[String]) -> String {
+    let mut out = String::from("[");
+    for (i, s) in items.iter().enumerate() {
+        if i > 0 {
+            out.push(',');
+        }
+        out.push('"');
+        out.push_str(&json_escape(s));
+        out.push('"');
+    }
+    out.push(']');
+    out
+}
+
+fn json_escape(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    for c in s.chars() {
+        match c {
+            '"' => out.push_str("\\\""),
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            '\r' => out.push_str("\\r"),
+            '\t' => out.push_str("\\t"),
+            c if (c as u32) < 0x20 => out.push_str(&format!("\\u{:04x}", c as u32)),
+            c => out.push(c),
+        }
+    }
+    out
 }
 
 /// Convert a native value to a `LazyVal` (no DOM build).
@@ -322,6 +512,26 @@ impl Compiler {
             let _ = self.eat(')');
             return Ok(Node::Coalesce(args));
         }
+        if self.starts_with("cartesian_product(") {
+            self.step("cartesian_product(".len());
+            let left = self.p_expr()?;
+            let _ = self.eat(',');
+            let right = self.p_expr()?;
+            let cond = if self.eat(',') {
+                match self.p_expr()? {
+                    Node::Lit(LazyLit::Str(s)) => Some(s),
+                    _ => None,
+                }
+            } else {
+                None
+            };
+            let _ = self.eat(')');
+            return Ok(Node::CartProd {
+                left: Box::new(left),
+                right: Box::new(right),
+                cond,
+            });
+        }
         self.p_atom()
     }
 
@@ -353,7 +563,9 @@ impl Compiler {
                                 num.push(c);
                                 self.pos += 1;
                             }
-                            if let Ok(i) = num.parse::<usize>() {
+                            if num.trim().is_empty() {
+                                segs.push(Seg::All);
+                            } else if let Ok(i) = num.trim().parse::<usize>() {
                                 segs.push(Seg::Idx(i));
                             }
                         }
@@ -631,5 +843,67 @@ impl IntoLazy for Cell {
             Cell::I64(i) => LazyVal::I64(i),
             Cell::Bool(b) => LazyVal::Bool(b),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::sonic::Sonic;
+
+    fn eval_str(expr: &str, json: &str) -> LazyVal {
+        let v: sonic_rs::Value = sonic_rs::from_str(json).unwrap();
+        let son = Sonic(v);
+        let ctx = Ctx::report(&son, json);
+        eval_lazy(expr, ctx)
+    }
+
+    #[test]
+    fn cartesian_product_ccy_pairs_with_filter() {
+        let json = r#"{"currency":"USD","underlyings":[
+            {"symbol":"HKD","currency":"HKD"},
+            {"symbol":"USD","currency":"USD"},
+            {"symbol":"SGD","currency":"SGD"}]}"#;
+        let v = eval_str("cartesian_product($.underlyings[].currency, $.currency, 'l != r')", json);
+        assert_eq!(v, LazyVal::Str("[\"HKDUSD\",\"SGDUSD\"]".to_string()));
+    }
+
+    #[test]
+    fn cartesian_product_no_filter_includes_equal() {
+        let json = r#"{"currency":"USD","underlyings":[
+            {"symbol":"HKD","currency":"HKD"},
+            {"symbol":"USD","currency":"USD"}]}"#;
+        let v = eval_str("cartesian_product($.underlyings[].currency, $.currency)", json);
+        assert_eq!(v, LazyVal::Str("[\"HKDUSD\",\"USDUSD\"]".to_string()));
+    }
+
+    #[test]
+    fn cartesian_product_keep_equal_only() {
+        let json = r#"{"ccy":"USD","underlyings":[
+            {"symbol":"HKD","currency":"HKD"},
+            {"symbol":"USD","currency":"USD"}]}"#;
+        let v = eval_str("cartesian_product($.underlyings[].currency, $.ccy, 'l = r')", json);
+        assert_eq!(v, LazyVal::Str("[\"USDUSD\"]".to_string()));
+    }
+
+    #[test]
+    fn cartesian_product_arrays_both_sides() {
+        let json = r#"{"a":[1,2],"b":["x","y"]}"#;
+        let v = eval_str("cartesian_product($.a, $.b)", json);
+        assert_eq!(v, LazyVal::Str("[\"1x\",\"1y\",\"2x\",\"2y\"]".to_string()));
+    }
+
+    #[test]
+    fn cartesian_product_scalar_left() {
+        let json = r#"{"ccy":"USD"}"#;
+        let v = eval_str("cartesian_product($.ccy, 'USD')", json);
+        assert_eq!(v, LazyVal::Str("[\"USDUSD\"]".to_string()));
+    }
+
+    #[test]
+    fn cartesian_product_missing_left() {
+        let json = r#"{"currency":"USD"}"#;
+        let v = eval_str("cartesian_product($.underlyings[].currency, $.currency)", json);
+        assert_eq!(v, LazyVal::Str("[]".to_string()));
     }
 }

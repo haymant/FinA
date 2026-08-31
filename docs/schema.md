@@ -116,12 +116,14 @@ A `fields[].expression` is a small composition language evaluated natively:
 |-------------------------------|------------------------------------------------------------|
 | `$`                           | the whole record (as its raw JSON text)                    |
 | `$.a.b[0].c`                  | JSON-path addressing (`.` keys, `[i]` indices)             |
+| `$.a[].c`                     | `[]` wildcard — fan out over every array element           |
 | `$alias`                      | an unwind alias (e.g. `$.symbol`) for `unwound` datasets   |
 | `source.path` / `$.path`      | bare path = this dataset's default source                  |
 | `alias.col`                   | a joined column (see `join`)                               |
 | `coalesce(a, b, 'DEF')`       | first non-null (short-circuit)                             |
 | `cast(x as double\|integer\|string)` | typed coercion                                      |
 | `to_json_string(x)`           | re-serialize a sub-node to a JSON string                   |
+| `cartesian_product(a, b[, 'l != r'])` | cross-product (see below)                          |
 | `'literal'` / `true` / `false` / `null` / `42` / `3.14` | literals              |
 
 The column's Parquet type is inferred from the expression's `cast ... as TYPE`
@@ -133,6 +135,27 @@ if present, else from boolean `true`/`false` literals, otherwise `string`:
 | `as integer`  | `INT64`      |
 | `as string`   | `UTF8`       |
 | (string/bool) | `UTF8` / `BOOLEAN` |
+
+### `cartesian_product(a, b[, cond])`
+
+Cross-products two (array) operands and returns the pairs as a JSON-array string
+(e.g. `["HKDUSD","SGDUSD"]`). Each pair is the concatenation of one element from
+`a` and one from `b`; either operand may be a scalar (treated as a single
+element) or an array. Use the `[]` wildcard to collect a field from every array
+element, e.g. `$.underlyings[].currency`.
+
+The optional third argument is a quoted filter over the pair values, referenced
+as `l` (from `a`) and `r` (from `b`): `'l != r'` drops equal pairs,
+`'l = r'` keeps only equal pairs, `'l CONTAINS 'HKD''` filters on a literal.
+
+```yaml
+# instrument currency = USD, underlying currencies = [HKD, USD, SGD]
+#   fx_pairs     -> ["HKDUSD","SGDUSD"]      (USD==USD excluded)
+#   fx_pairs_all -> ["HKDUSD","USDUSD","SGDUSD"]
+fields:
+  - {name: fx_pairs,     expression: "cartesian_product($.underlyings[].currency, $.currency, 'l != r')"}
+  - {name: fx_pairs_all, expression: "cartesian_product($.underlyings[].currency, $.currency)"}
+```
 
 ## Unwind rule
 

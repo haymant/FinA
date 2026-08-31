@@ -105,12 +105,13 @@ class Field:
     """A single output column: ``name`` + a field ``expression``.
 
     Expression syntax (see README / docs/schema.md):
-    * ``$`` or ``$a.b[0]``           JSON-path addressing.
+    * ``$`` or ``$a.b[0]``           JSON-path addressing (``$a[].b`` fans out).
     * ``{sourceName.}path``          cross-source projection (bare path = default source).
     * ``coalesce(a, b, 'DEF')``      first non-null.
     * ``cast(x as double|integer|string)``  typed coercion.
     * ``alias.col`` / ``cast(alias.col as TYPE)``  joined-column access.
     * ``to_json_string(x)``          re-serialize a sub-node.
+    * ``cartesian_product(a, b[, 'l != r'])``  cross-product pairs (JSON array).
     * literals: ``'str'``, ``true``, ``false``, ``null``, numbers.
     """
 

@@ -52,3 +52,26 @@ pipelines:
           - {name: currency, expression: "coalesce($.currency, 'USD')"}
           - {name: symbol, expression: "$.u"}
           - {name: spot, expression: "cast(mkt.spot as double)"}
+
+  # ---------------------------------------------------------------------
+  # fxCartesianETL: cartesian-product of each underlying's currency against
+  # the instrument currency, excluding pairs where both sides are equal.
+  #   fx_pairs     -> filtered:  ["HKDUSD","SGDUSD"] (USD==USD dropped)
+  #   fx_pairs_all -> unfiltered: ["HKDUSD","USDUSD","SGDUSD"]
+  # ---------------------------------------------------------------------
+  - name: fxCartesianETL
+    sources:
+      - name: fx
+        uri: file://fx_instruments.json
+        format: json
+    datasets:
+      - name: fx_pairs
+        type: raw
+        source: fx
+        to:
+          uri: file://out
+        fields:
+          - {name: instrument_id, expression: "$.id"}
+          - {name: instrument_ccy, expression: "$.currency"}
+          - {name: fx_pairs, expression: "cartesian_product($.underlyings[].currency, $.currency, 'l != r')"}
+          - {name: fx_pairs_all, expression: "cartesian_product($.underlyings[].currency, $.currency)"}

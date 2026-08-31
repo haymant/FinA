@@ -103,15 +103,18 @@ sonicetl.dumps({"k": [1, 2.5, True]})
 
 # whole ETL (pipelines) -----------------------------------------------------
 result = sonicetl.run_pipelines("examples/demo/pipelines.yml")
-result.rows        # {'spot': 12, 'products': 1200}
+result.rows        # {'spot': 12, 'products': 1200, 'fx_pairs': 2}
 result.breakdown() # "pipeline 'mktDataETL' dataset 'spot'=1.3 ms  ..."
 result.total_etl_ms()
 ```
 
-The demo runs two pipelines: `mktDataETL` loads a spot reference table into the
-shared in-memory duckdb store (`memory://spot`), and `prodETL` unwinds one row
-per underlying, enriches each row with the live spot via a LEFT JOIN, and writes
-a Hive-partitioned parquet dataset:
+The demo runs three pipelines: `mktDataETL` loads a spot reference table into the
+shared in-memory duckdb store (`memory://spot`); `prodETL` unwinds one row per
+underlying, enriches each row with the live spot via a LEFT JOIN, and writes a
+Hive-partitioned parquet dataset; `fxCartesianETL` shows
+`cartesian_product(...)` producing an instrument's FX-pair array
+(`["HKDUSD","SGDUSD"]` for instrument `USD` with underlyings `HKD, USD, SGD`,
+the equal `USDUSD` pair filtered out):
 
 ```
 examples/demo/
@@ -202,12 +205,25 @@ join:
 |----------------------------------------|--------------------------------------------|
 | `$`                                    | whole record (as raw JSON text)            |
 | `$.a.b[0].c`                           | JSON-path addressing                       |
+| `$.a[].c`                              | `[]` wildcard — fan out over array elements |
 | `$alias`                               | unwind alias (e.g. `$.symbol`)             |
 | `alias.col` / `cast(alias.col as TYPE)`| joined-column access                       |
 | `coalesce(a, b, 'DEF')`                | first non-null                             |
 | `cast(x as double\|integer\|string)`   | typed coercion                             |
 | `to_json_string(x)`                    | re-serialize a sub-node to JSON string     |
+| `cartesian_product(a, b[, 'l != r'])`  | cross-product pairs (see below)            |
 | `'lit'` / `true` / `false` / `null` / `42` / `3.14` | literals                       |
+
+`cartesian_product(a, b[, 'l != r'])` cross-products two (array) operands and
+returns the pairs as a JSON-array string (e.g. `["HKDUSD","SGDUSD"]`), each pair
+being the concatenation of one element of `a` and one of `b`. A scalar operand
+is treated as a single element. The optional quoted filter references the pair
+as `l` / `r`: `'l != r'` drops equal pairs (e.g. when an underlying's currency
+equals the instrument currency):
+
+```yaml
+- {name: fx_pairs, expression: "cartesian_product($.underlyings[].currency, $.currency, 'l != r')"}
+```
 
 Column Parquet types are inferred from `cast ... as TYPE` (else string/bool).
 

@@ -1,0 +1,21 @@
+[
+  {
+    "id": "fx1",
+    "name": "Multi-CCY Strip",
+    "currency": "USD",
+    "underlyings": [
+      {"symbol": "HKD", "currency": "HKD"},
+      {"symbol": "SGD", "currency": "SGD"},
+      {"symbol": "USD", "currency": "USD"}
+    ]
+  },
+  {
+    "id": "fx2",
+    "name": "AUD-Linked Accrual",
+    "currency": "AUD",
+    "underlyings": [
+      {"symbol": "USD", "currency": "USD"},
+      {"symbol": "EUR", "currency": "EUR"}
+    ]
+  }
+]
