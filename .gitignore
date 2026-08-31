@@ -1,0 +1,13 @@
+# Rust build artifacts
+target/
+Cargo.lock
+
+# Python / build artifacts
+__pycache__/
+*.py[co]
+build/
+dist/
+wheels/
+*.egg-info
+*.so
+.venv

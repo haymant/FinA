@@ -1,0 +1,6602 @@
+[
+ {
+  "id": "1000",
+  "name": "Autocall Instrument #1",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "1",
+  "maturityDate": "2027-12-09",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 105.8
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  },
+  "issueDate": "2026-09-03"
+ },
+ {
+  "id": "1001",
+  "name": "Barrier Instrument #2",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-01-03",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 108.17
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1002",
+  "name": "Accrual Instrument #3",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-08-19",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 252.36
+  }
+ },
+ {
+  "id": "1003",
+  "name": "Autocall Instrument #4",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "2",
+  "maturityDate": "2027-12-14",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 119.47
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": false
+  },
+  "issueDate": "2026-06-04"
+ },
+ {
+  "id": "1004",
+  "name": "Barrier Instrument #5",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "4",
+  "maturityDate": "2027-02-12",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 200.93
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1005",
+  "name": "Accrual Instrument #6",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "4",
+  "maturityDate": "2027-02-18",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 257.35
+  }
+ },
+ {
+  "id": "1006",
+  "name": "Autocall Instrument #7",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-04-23",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 61.46
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": false
+  },
+  "issueDate": "2026-02-28"
+ },
+ {
+  "id": "1007",
+  "name": "Barrier Instrument #8",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "1",
+  "maturityDate": "2027-07-09",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 208.92
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1008",
+  "name": "Accrual Instrument #9",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-11-09",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 284.16
+  }
+ },
+ {
+  "id": "1009",
+  "name": "Autocall Instrument #10",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "5",
+  "maturityDate": "2027-11-06",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 232.28
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-05-21"
+ },
+ {
+  "id": "1010",
+  "name": "Barrier Instrument #11",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "3",
+  "maturityDate": "2027-01-08",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 251.26
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1011",
+  "name": "Accrual Instrument #12",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "5",
+  "maturityDate": "2027-12-11",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 213.86
+  }
+ },
+ {
+  "id": "1012",
+  "name": "Autocall Instrument #13",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "4",
+  "maturityDate": "2027-03-09",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 111.66
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": false
+  },
+  "issueDate": "2026-07-19"
+ },
+ {
+  "id": "1013",
+  "name": "Barrier Instrument #14",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-04-05",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 173.38
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1014",
+  "name": "Accrual Instrument #15",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-11-14",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 65.88
+  }
+ },
+ {
+  "id": "1015",
+  "name": "Autocall Instrument #16",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-08-17",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 292.77
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  },
+  "issueDate": "2026-02-22"
+ },
+ {
+  "id": "1016",
+  "name": "Barrier Instrument #17",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "3",
+  "maturityDate": "2027-02-10",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 89.54
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1017",
+  "name": "Accrual Instrument #18",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-03-17",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 267.63
+  }
+ },
+ {
+  "id": "1018",
+  "name": "Autocall Instrument #19",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-10-07",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 143.48
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-09-01"
+ },
+ {
+  "id": "1019",
+  "name": "Barrier Instrument #20",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-01-04",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 269.68
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1020",
+  "name": "Accrual Instrument #21",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "5",
+  "maturityDate": "2027-02-03",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 171.5
+  }
+ },
+ {
+  "id": "1021",
+  "name": "Autocall Instrument #22",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "5",
+  "maturityDate": "2027-03-05",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 168.82
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-10-14"
+ },
+ {
+  "id": "1022",
+  "name": "Barrier Instrument #23",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "5",
+  "maturityDate": "2027-12-23",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 228.24
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1023",
+  "name": "Accrual Instrument #24",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-09-15",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 111.98
+  }
+ },
+ {
+  "id": "1024",
+  "name": "Autocall Instrument #25",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "3",
+  "maturityDate": "2027-01-19",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 107.53
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-12-21"
+ },
+ {
+  "id": "1025",
+  "name": "Barrier Instrument #26",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "2",
+  "maturityDate": "2027-02-02",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 67.71
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1026",
+  "name": "Accrual Instrument #27",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-09-05",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 283.88
+  }
+ },
+ {
+  "id": "1027",
+  "name": "Autocall Instrument #28",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-08-26",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 97.6
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  },
+  "issueDate": "2026-06-14"
+ },
+ {
+  "id": "1028",
+  "name": "Barrier Instrument #29",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "4",
+  "maturityDate": "2027-12-02",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 213.36
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1029",
+  "name": "Accrual Instrument #30",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-04-07",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 184.07
+  }
+ },
+ {
+  "id": "1030",
+  "name": "Autocall Instrument #31",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "4",
+  "maturityDate": "2027-03-09",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 112.45
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  },
+  "issueDate": "2026-09-04"
+ },
+ {
+  "id": "1031",
+  "name": "Barrier Instrument #32",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "5",
+  "maturityDate": "2027-01-03",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 91.58
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1032",
+  "name": "Accrual Instrument #33",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-03-13",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 296.33
+  }
+ },
+ {
+  "id": "1033",
+  "name": "Autocall Instrument #34",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-05-14",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 289.33
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-05-07"
+ },
+ {
+  "id": "1034",
+  "name": "Barrier Instrument #35",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "5",
+  "maturityDate": "2027-12-18",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 236.99
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1035",
+  "name": "Accrual Instrument #36",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-09-06",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 290.19
+  }
+ },
+ {
+  "id": "1036",
+  "name": "Autocall Instrument #37",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "2",
+  "maturityDate": "2027-02-20",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 218.8
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-10-08"
+ },
+ {
+  "id": "1037",
+  "name": "Barrier Instrument #38",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "5",
+  "maturityDate": "2027-02-14",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 195.92
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1038",
+  "name": "Accrual Instrument #39",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "3",
+  "maturityDate": "2027-04-09",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 82.72
+  }
+ },
+ {
+  "id": "1039",
+  "name": "Autocall Instrument #40",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-06-25",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 52.33
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  },
+  "issueDate": "2026-04-17"
+ },
+ {
+  "id": "1040",
+  "name": "Barrier Instrument #41",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-06-03",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 142.38
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1041",
+  "name": "Accrual Instrument #42",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-11-17",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 216.97
+  }
+ },
+ {
+  "id": "1042",
+  "name": "Autocall Instrument #43",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-03-09",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 272.43
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-10-07"
+ },
+ {
+  "id": "1043",
+  "name": "Barrier Instrument #44",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-11-21",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 176.35
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1044",
+  "name": "Accrual Instrument #45",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "1",
+  "maturityDate": "2027-11-14",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 61.02
+  }
+ },
+ {
+  "id": "1045",
+  "name": "Autocall Instrument #46",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-11-09",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 235.31
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-02-03"
+ },
+ {
+  "id": "1046",
+  "name": "Barrier Instrument #47",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "5",
+  "maturityDate": "2027-01-27",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 195.63
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1047",
+  "name": "Accrual Instrument #48",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "3",
+  "maturityDate": "2027-06-26",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 274.73
+  }
+ },
+ {
+  "id": "1048",
+  "name": "Autocall Instrument #49",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-11-04",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 245.03
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  },
+  "issueDate": "2026-12-05"
+ },
+ {
+  "id": "1049",
+  "name": "Barrier Instrument #50",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-03-14",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 94.84
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1050",
+  "name": "Accrual Instrument #51",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-05-06",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 77.02
+  }
+ },
+ {
+  "id": "1051",
+  "name": "Autocall Instrument #52",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "4",
+  "maturityDate": "2027-04-07",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 137.41
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-11-07"
+ },
+ {
+  "id": "1052",
+  "name": "Barrier Instrument #53",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-05-28",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 291.72
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1053",
+  "name": "Accrual Instrument #54",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-06-01",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 269.26
+  }
+ },
+ {
+  "id": "1054",
+  "name": "Autocall Instrument #55",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-10-09",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 77.1
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-06-14"
+ },
+ {
+  "id": "1055",
+  "name": "Barrier Instrument #56",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "4",
+  "maturityDate": "2027-10-07",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 61.1
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1056",
+  "name": "Accrual Instrument #57",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "3",
+  "maturityDate": "2027-07-03",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 280.19
+  }
+ },
+ {
+  "id": "1057",
+  "name": "Autocall Instrument #58",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-12-10",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 127.32
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-12-10"
+ },
+ {
+  "id": "1058",
+  "name": "Barrier Instrument #59",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-07-22",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 219.33
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1059",
+  "name": "Accrual Instrument #60",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-09-27",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 125.97
+  }
+ },
+ {
+  "id": "1060",
+  "name": "Autocall Instrument #61",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "4",
+  "maturityDate": "2027-10-20",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 130.56
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-04-17"
+ },
+ {
+  "id": "1061",
+  "name": "Barrier Instrument #62",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-11-03",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 178.86
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1062",
+  "name": "Accrual Instrument #63",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "3",
+  "maturityDate": "2027-04-26",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 86.84
+  }
+ },
+ {
+  "id": "1063",
+  "name": "Autocall Instrument #64",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "2",
+  "maturityDate": "2027-08-20",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 163.85
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": false
+  },
+  "issueDate": "2026-07-16"
+ },
+ {
+  "id": "1064",
+  "name": "Barrier Instrument #65",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-03-21",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 51.39
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1065",
+  "name": "Accrual Instrument #66",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-12-17",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 62.55
+  }
+ },
+ {
+  "id": "1066",
+  "name": "Autocall Instrument #67",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "1",
+  "maturityDate": "2027-08-05",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 216.89
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": false
+  },
+  "issueDate": "2026-08-20"
+ },
+ {
+  "id": "1067",
+  "name": "Barrier Instrument #68",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-08-06",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 265.37
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1068",
+  "name": "Accrual Instrument #69",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "3",
+  "maturityDate": "2027-09-16",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 109.81
+  }
+ },
+ {
+  "id": "1069",
+  "name": "Autocall Instrument #70",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-12-10",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 117.93
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": false
+  },
+  "issueDate": "2026-02-05"
+ },
+ {
+  "id": "1070",
+  "name": "Barrier Instrument #71",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-07-23",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 226.6
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1071",
+  "name": "Accrual Instrument #72",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-08-14",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 101.71
+  }
+ },
+ {
+  "id": "1072",
+  "name": "Autocall Instrument #73",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "4",
+  "maturityDate": "2027-10-23",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 264.18
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-06-10"
+ },
+ {
+  "id": "1073",
+  "name": "Barrier Instrument #74",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "4",
+  "maturityDate": "2027-09-24",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 186.53
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1074",
+  "name": "Accrual Instrument #75",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-08-01",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 134.03
+  }
+ },
+ {
+  "id": "1075",
+  "name": "Autocall Instrument #76",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-08-05",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 183.53
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-11-01"
+ },
+ {
+  "id": "1076",
+  "name": "Barrier Instrument #77",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "4",
+  "maturityDate": "2027-03-28",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 95.43
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1077",
+  "name": "Accrual Instrument #78",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "4",
+  "maturityDate": "2027-06-11",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 119.56
+  }
+ },
+ {
+  "id": "1078",
+  "name": "Autocall Instrument #79",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-02-16",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 237.26
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": false
+  },
+  "issueDate": "2026-06-08"
+ },
+ {
+  "id": "1079",
+  "name": "Barrier Instrument #80",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "1",
+  "maturityDate": "2027-01-08",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 259.81
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1080",
+  "name": "Accrual Instrument #81",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-10-07",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 224.87
+  }
+ },
+ {
+  "id": "1081",
+  "name": "Autocall Instrument #82",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-10-20",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 229.59
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": false
+  },
+  "issueDate": "2026-02-19"
+ },
+ {
+  "id": "1082",
+  "name": "Barrier Instrument #83",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "3",
+  "maturityDate": "2027-10-22",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 149.16
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1083",
+  "name": "Accrual Instrument #84",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "1",
+  "maturityDate": "2027-12-25",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 262.57
+  }
+ },
+ {
+  "id": "1084",
+  "name": "Autocall Instrument #85",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "5",
+  "maturityDate": "2027-01-12",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 157.09
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  },
+  "issueDate": "2026-11-11"
+ },
+ {
+  "id": "1085",
+  "name": "Barrier Instrument #86",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "4",
+  "maturityDate": "2027-08-04",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 290.2
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1086",
+  "name": "Accrual Instrument #87",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-12-17",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 117.52
+  }
+ },
+ {
+  "id": "1087",
+  "name": "Autocall Instrument #88",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "4",
+  "maturityDate": "2027-07-27",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 198.12
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": false
+  },
+  "issueDate": "2026-02-09"
+ },
+ {
+  "id": "1088",
+  "name": "Barrier Instrument #89",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-08-19",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 217.05
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1089",
+  "name": "Accrual Instrument #90",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-08-07",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 249.46
+  }
+ },
+ {
+  "id": "1090",
+  "name": "Autocall Instrument #91",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "3",
+  "maturityDate": "2027-10-23",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 188.95
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-12-14"
+ },
+ {
+  "id": "1091",
+  "name": "Barrier Instrument #92",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-04-23",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 211.48
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1092",
+  "name": "Accrual Instrument #93",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "1",
+  "maturityDate": "2027-05-08",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 222.95
+  }
+ },
+ {
+  "id": "1093",
+  "name": "Autocall Instrument #94",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-06-16",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 182.73
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  },
+  "issueDate": "2026-09-11"
+ },
+ {
+  "id": "1094",
+  "name": "Barrier Instrument #95",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-05-10",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 107.63
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1095",
+  "name": "Accrual Instrument #96",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-04-24",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 119.12
+  }
+ },
+ {
+  "id": "1096",
+  "name": "Autocall Instrument #97",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-04-10",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 140.22
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  },
+  "issueDate": "2026-09-05"
+ },
+ {
+  "id": "1097",
+  "name": "Barrier Instrument #98",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-01-18",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 224.35
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1098",
+  "name": "Accrual Instrument #99",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-01-19",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 167.35
+  }
+ },
+ {
+  "id": "1099",
+  "name": "Autocall Instrument #100",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-03-02",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 285.27
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-02-13"
+ },
+ {
+  "id": "1100",
+  "name": "Barrier Instrument #101",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-10-21",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 63.4
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1101",
+  "name": "Accrual Instrument #102",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-04-04",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 241.11
+  }
+ },
+ {
+  "id": "1102",
+  "name": "Autocall Instrument #103",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "5",
+  "maturityDate": "2027-07-15",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 124.34
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-10-02"
+ },
+ {
+  "id": "1103",
+  "name": "Barrier Instrument #104",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "2",
+  "maturityDate": "2027-11-07",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 215.11
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1104",
+  "name": "Accrual Instrument #105",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "2",
+  "maturityDate": "2027-01-14",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 222.34
+  }
+ },
+ {
+  "id": "1105",
+  "name": "Autocall Instrument #106",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-01-08",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 226.74
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-04-09"
+ },
+ {
+  "id": "1106",
+  "name": "Barrier Instrument #107",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "4",
+  "maturityDate": "2027-02-18",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 211.91
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1107",
+  "name": "Accrual Instrument #108",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "1",
+  "maturityDate": "2027-03-26",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 198.76
+  }
+ },
+ {
+  "id": "1108",
+  "name": "Autocall Instrument #109",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-02-15",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 126.02
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  },
+  "issueDate": "2026-09-18"
+ },
+ {
+  "id": "1109",
+  "name": "Barrier Instrument #110",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "4",
+  "maturityDate": "2027-02-20",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 272.36
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1110",
+  "name": "Accrual Instrument #111",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "1",
+  "maturityDate": "2027-04-22",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 196.78
+  }
+ },
+ {
+  "id": "1111",
+  "name": "Autocall Instrument #112",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "3",
+  "maturityDate": "2027-10-02",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 167.63
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  },
+  "issueDate": "2026-03-19"
+ },
+ {
+  "id": "1112",
+  "name": "Barrier Instrument #113",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "4",
+  "maturityDate": "2027-02-16",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 152.09
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1113",
+  "name": "Accrual Instrument #114",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "3",
+  "maturityDate": "2027-07-23",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 122.05
+  }
+ },
+ {
+  "id": "1114",
+  "name": "Autocall Instrument #115",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-01-15",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 128.63
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  },
+  "issueDate": "2026-07-28"
+ },
+ {
+  "id": "1115",
+  "name": "Barrier Instrument #116",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "5",
+  "maturityDate": "2027-08-14",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 96.9
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1116",
+  "name": "Accrual Instrument #117",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "4",
+  "maturityDate": "2027-01-07",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 187.3
+  }
+ },
+ {
+  "id": "1117",
+  "name": "Autocall Instrument #118",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-12-16",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 57.22
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": false
+  },
+  "issueDate": "2026-05-18"
+ },
+ {
+  "id": "1118",
+  "name": "Barrier Instrument #119",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "5",
+  "maturityDate": "2027-07-03",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 298.06
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1119",
+  "name": "Accrual Instrument #120",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "2",
+  "maturityDate": "2027-08-23",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 177.22
+  }
+ },
+ {
+  "id": "1120",
+  "name": "Autocall Instrument #121",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-08-16",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 164.2
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-10-17"
+ },
+ {
+  "id": "1121",
+  "name": "Barrier Instrument #122",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "1",
+  "maturityDate": "2027-05-25",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 134.97
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1122",
+  "name": "Accrual Instrument #123",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "3",
+  "maturityDate": "2027-10-19",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 172.41
+  }
+ },
+ {
+  "id": "1123",
+  "name": "Autocall Instrument #124",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "4",
+  "maturityDate": "2027-09-16",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 133.11
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-06-28"
+ },
+ {
+  "id": "1124",
+  "name": "Barrier Instrument #125",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-10-13",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 264.0
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1125",
+  "name": "Accrual Instrument #126",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "4",
+  "maturityDate": "2027-07-22",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 295.2
+  }
+ },
+ {
+  "id": "1126",
+  "name": "Autocall Instrument #127",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-03-17",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 133.0
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": false
+  },
+  "issueDate": "2026-08-04"
+ },
+ {
+  "id": "1127",
+  "name": "Barrier Instrument #128",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-12-05",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 267.73
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1128",
+  "name": "Accrual Instrument #129",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "3",
+  "maturityDate": "2027-10-23",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 212.46
+  }
+ },
+ {
+  "id": "1129",
+  "name": "Autocall Instrument #130",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-07-11",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 229.68
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  },
+  "issueDate": "2026-01-20"
+ },
+ {
+  "id": "1130",
+  "name": "Barrier Instrument #131",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "2",
+  "maturityDate": "2027-11-22",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 299.36
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1131",
+  "name": "Accrual Instrument #132",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "1",
+  "maturityDate": "2027-08-06",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 124.87
+  }
+ },
+ {
+  "id": "1132",
+  "name": "Autocall Instrument #133",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "1",
+  "maturityDate": "2027-06-26",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 123.34
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  },
+  "issueDate": "2026-04-17"
+ },
+ {
+  "id": "1133",
+  "name": "Barrier Instrument #134",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-11-26",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 92.5
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1134",
+  "name": "Accrual Instrument #135",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-11-08",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 278.21
+  }
+ },
+ {
+  "id": "1135",
+  "name": "Autocall Instrument #136",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-08-21",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 164.89
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": false
+  },
+  "issueDate": "2026-08-10"
+ },
+ {
+  "id": "1136",
+  "name": "Barrier Instrument #137",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "1",
+  "maturityDate": "2027-08-12",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 124.79
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1137",
+  "name": "Accrual Instrument #138",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-04-13",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 76.66
+  }
+ },
+ {
+  "id": "1138",
+  "name": "Autocall Instrument #139",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-06-19",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 298.17
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  },
+  "issueDate": "2026-11-13"
+ },
+ {
+  "id": "1139",
+  "name": "Barrier Instrument #140",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-10-28",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 244.58
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1140",
+  "name": "Accrual Instrument #141",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-04-20",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 104.75
+  }
+ },
+ {
+  "id": "1141",
+  "name": "Autocall Instrument #142",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "5",
+  "maturityDate": "2027-05-22",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 241.87
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-11-21"
+ },
+ {
+  "id": "1142",
+  "name": "Barrier Instrument #143",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "3",
+  "maturityDate": "2027-08-02",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 141.22
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1143",
+  "name": "Accrual Instrument #144",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "3",
+  "maturityDate": "2027-12-14",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 100.2
+  }
+ },
+ {
+  "id": "1144",
+  "name": "Autocall Instrument #145",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-09-09",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 114.24
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  },
+  "issueDate": "2026-05-24"
+ },
+ {
+  "id": "1145",
+  "name": "Barrier Instrument #146",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-08-03",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 238.54
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1146",
+  "name": "Accrual Instrument #147",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-06-03",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 53.48
+  }
+ },
+ {
+  "id": "1147",
+  "name": "Autocall Instrument #148",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "4",
+  "maturityDate": "2027-06-22",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 218.09
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  },
+  "issueDate": "2026-06-04"
+ },
+ {
+  "id": "1148",
+  "name": "Barrier Instrument #149",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "4",
+  "maturityDate": "2027-01-20",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 132.0
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1149",
+  "name": "Accrual Instrument #150",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-11-14",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 84.94
+  }
+ },
+ {
+  "id": "1150",
+  "name": "Autocall Instrument #151",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "3",
+  "maturityDate": "2027-08-04",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 108.7
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-06-22"
+ },
+ {
+  "id": "1151",
+  "name": "Barrier Instrument #152",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-12-24",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 271.35
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1152",
+  "name": "Accrual Instrument #153",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-01-23",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 104.32
+  }
+ },
+ {
+  "id": "1153",
+  "name": "Autocall Instrument #154",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-06-04",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 141.83
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  },
+  "issueDate": "2026-05-07"
+ },
+ {
+  "id": "1154",
+  "name": "Barrier Instrument #155",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "4",
+  "maturityDate": "2027-02-22",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 210.43
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1155",
+  "name": "Accrual Instrument #156",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-03-26",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 101.3
+  }
+ },
+ {
+  "id": "1156",
+  "name": "Autocall Instrument #157",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "5",
+  "maturityDate": "2027-04-27",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 132.14
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": false
+  },
+  "issueDate": "2026-10-01"
+ },
+ {
+  "id": "1157",
+  "name": "Barrier Instrument #158",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-03-18",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 249.63
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1158",
+  "name": "Accrual Instrument #159",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "2",
+  "maturityDate": "2027-01-12",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 197.21
+  }
+ },
+ {
+  "id": "1159",
+  "name": "Autocall Instrument #160",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "2",
+  "maturityDate": "2027-05-02",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 235.43
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": false
+  },
+  "issueDate": "2026-08-15"
+ },
+ {
+  "id": "1160",
+  "name": "Barrier Instrument #161",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-10-04",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 175.96
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1161",
+  "name": "Accrual Instrument #162",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-11-01",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 299.65
+  }
+ },
+ {
+  "id": "1162",
+  "name": "Autocall Instrument #163",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "4",
+  "maturityDate": "2027-11-04",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 228.1
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-02-11"
+ },
+ {
+  "id": "1163",
+  "name": "Barrier Instrument #164",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "1",
+  "maturityDate": "2027-03-09",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 208.27
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1164",
+  "name": "Accrual Instrument #165",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-09-20",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 74.79
+  }
+ },
+ {
+  "id": "1165",
+  "name": "Autocall Instrument #166",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "5",
+  "maturityDate": "2027-12-28",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 157.52
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-08-13"
+ },
+ {
+  "id": "1166",
+  "name": "Barrier Instrument #167",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-06-14",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 216.28
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1167",
+  "name": "Accrual Instrument #168",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-02-27",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 73.31
+  }
+ },
+ {
+  "id": "1168",
+  "name": "Autocall Instrument #169",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "3",
+  "maturityDate": "2027-03-18",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 196.62
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  },
+  "issueDate": "2026-07-12"
+ },
+ {
+  "id": "1169",
+  "name": "Barrier Instrument #170",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-05-20",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 137.91
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1170",
+  "name": "Accrual Instrument #171",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-02-12",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 141.89
+  }
+ },
+ {
+  "id": "1171",
+  "name": "Autocall Instrument #172",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-04-26",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 261.29
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  },
+  "issueDate": "2026-11-27"
+ },
+ {
+  "id": "1172",
+  "name": "Barrier Instrument #173",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-03-09",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 240.6
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1173",
+  "name": "Accrual Instrument #174",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-10-22",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 67.4
+  }
+ },
+ {
+  "id": "1174",
+  "name": "Autocall Instrument #175",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "1",
+  "maturityDate": "2027-12-17",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 144.05
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-06-10"
+ },
+ {
+  "id": "1175",
+  "name": "Barrier Instrument #176",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-10-03",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 88.89
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1176",
+  "name": "Accrual Instrument #177",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-11-14",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 201.77
+  }
+ },
+ {
+  "id": "1177",
+  "name": "Autocall Instrument #178",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-04-25",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 78.45
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-11-22"
+ },
+ {
+  "id": "1178",
+  "name": "Barrier Instrument #179",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-11-10",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 105.13
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1179",
+  "name": "Accrual Instrument #180",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-03-25",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 122.36
+  }
+ },
+ {
+  "id": "1180",
+  "name": "Autocall Instrument #181",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "1",
+  "maturityDate": "2027-08-24",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 93.92
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-04-17"
+ },
+ {
+  "id": "1181",
+  "name": "Barrier Instrument #182",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-07-28",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 60.58
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1182",
+  "name": "Accrual Instrument #183",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "3",
+  "maturityDate": "2027-10-14",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 151.11
+  }
+ },
+ {
+  "id": "1183",
+  "name": "Autocall Instrument #184",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-02-13",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 291.55
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": false
+  },
+  "issueDate": "2026-10-15"
+ },
+ {
+  "id": "1184",
+  "name": "Barrier Instrument #185",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-07-28",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 110.83
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1185",
+  "name": "Accrual Instrument #186",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-12-11",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 133.27
+  }
+ },
+ {
+  "id": "1186",
+  "name": "Autocall Instrument #187",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "1",
+  "maturityDate": "2027-09-21",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 182.65
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": false
+  },
+  "issueDate": "2026-06-12"
+ },
+ {
+  "id": "1187",
+  "name": "Barrier Instrument #188",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-02-05",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 99.32
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1188",
+  "name": "Accrual Instrument #189",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "2",
+  "maturityDate": "2027-11-16",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 238.61
+  }
+ },
+ {
+  "id": "1189",
+  "name": "Autocall Instrument #190",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-11-21",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 130.8
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  },
+  "issueDate": "2026-02-16"
+ },
+ {
+  "id": "1190",
+  "name": "Barrier Instrument #191",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-05-19",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 137.99
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1191",
+  "name": "Accrual Instrument #192",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-01-12",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 69.18
+  }
+ },
+ {
+  "id": "1192",
+  "name": "Autocall Instrument #193",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "5",
+  "maturityDate": "2027-10-17",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 165.68
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  },
+  "issueDate": "2026-10-21"
+ },
+ {
+  "id": "1193",
+  "name": "Barrier Instrument #194",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "3",
+  "maturityDate": "2027-10-16",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 87.72
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1194",
+  "name": "Accrual Instrument #195",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-09-21",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 59.79
+  }
+ },
+ {
+  "id": "1195",
+  "name": "Autocall Instrument #196",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "4",
+  "maturityDate": "2027-09-17",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 89.69
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": false
+  },
+  "issueDate": "2026-07-14"
+ },
+ {
+  "id": "1196",
+  "name": "Barrier Instrument #197",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-01-26",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 211.83
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1197",
+  "name": "Accrual Instrument #198",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-05-24",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 291.1
+  }
+ },
+ {
+  "id": "1198",
+  "name": "Autocall Instrument #199",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "3",
+  "maturityDate": "2027-02-19",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 85.36
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  },
+  "issueDate": "2026-11-23"
+ },
+ {
+  "id": "1199",
+  "name": "Barrier Instrument #200",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-10-23",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 127.4
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1200",
+  "name": "Accrual Instrument #201",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-11-23",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 299.29
+  }
+ },
+ {
+  "id": "1201",
+  "name": "Autocall Instrument #202",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "4",
+  "maturityDate": "2027-09-12",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 140.65
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": false
+  },
+  "issueDate": "2026-06-25"
+ },
+ {
+  "id": "1202",
+  "name": "Barrier Instrument #203",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-04-05",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 69.29
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1203",
+  "name": "Accrual Instrument #204",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "3",
+  "maturityDate": "2027-10-05",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 144.18
+  }
+ },
+ {
+  "id": "1204",
+  "name": "Autocall Instrument #205",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-12-25",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 252.26
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": false
+  },
+  "issueDate": "2026-01-14"
+ },
+ {
+  "id": "1205",
+  "name": "Barrier Instrument #206",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-08-20",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 238.1
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1206",
+  "name": "Accrual Instrument #207",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "3",
+  "maturityDate": "2027-08-27",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 141.96
+  }
+ },
+ {
+  "id": "1207",
+  "name": "Autocall Instrument #208",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "4",
+  "maturityDate": "2027-05-25",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 175.73
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  },
+  "issueDate": "2026-04-26"
+ },
+ {
+  "id": "1208",
+  "name": "Barrier Instrument #209",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "3",
+  "maturityDate": "2027-01-21",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 268.53
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1209",
+  "name": "Accrual Instrument #210",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "3",
+  "maturityDate": "2027-02-25",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 118.2
+  }
+ },
+ {
+  "id": "1210",
+  "name": "Autocall Instrument #211",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "4",
+  "maturityDate": "2027-02-08",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 271.16
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  },
+  "issueDate": "2026-07-17"
+ },
+ {
+  "id": "1211",
+  "name": "Barrier Instrument #212",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-07-03",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 106.13
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1212",
+  "name": "Accrual Instrument #213",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-03-02",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 279.35
+  }
+ },
+ {
+  "id": "1213",
+  "name": "Autocall Instrument #214",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-12-16",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 203.84
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  },
+  "issueDate": "2026-04-27"
+ },
+ {
+  "id": "1214",
+  "name": "Barrier Instrument #215",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "5",
+  "maturityDate": "2027-12-20",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 155.81
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1215",
+  "name": "Accrual Instrument #216",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "1",
+  "maturityDate": "2027-04-14",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 248.47
+  }
+ },
+ {
+  "id": "1216",
+  "name": "Autocall Instrument #217",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-02-27",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 199.18
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  },
+  "issueDate": "2026-10-08"
+ },
+ {
+  "id": "1217",
+  "name": "Barrier Instrument #218",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "3",
+  "maturityDate": "2027-07-01",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 138.2
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1218",
+  "name": "Accrual Instrument #219",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "5",
+  "maturityDate": "2027-06-03",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 186.02
+  }
+ },
+ {
+  "id": "1219",
+  "name": "Autocall Instrument #220",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "4",
+  "maturityDate": "2027-08-02",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 146.72
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  },
+  "issueDate": "2026-01-12"
+ },
+ {
+  "id": "1220",
+  "name": "Barrier Instrument #221",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "3",
+  "maturityDate": "2027-04-24",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 207.06
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1221",
+  "name": "Accrual Instrument #222",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-06-27",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 93.77
+  }
+ },
+ {
+  "id": "1222",
+  "name": "Autocall Instrument #223",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "4",
+  "maturityDate": "2027-11-06",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 65.78
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-04-02"
+ },
+ {
+  "id": "1223",
+  "name": "Barrier Instrument #224",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "1",
+  "maturityDate": "2027-06-10",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 149.56
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1224",
+  "name": "Accrual Instrument #225",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "3",
+  "maturityDate": "2027-06-28",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 266.45
+  }
+ },
+ {
+  "id": "1225",
+  "name": "Autocall Instrument #226",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "3",
+  "maturityDate": "2027-02-26",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 159.24
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  },
+  "issueDate": "2026-07-11"
+ },
+ {
+  "id": "1226",
+  "name": "Barrier Instrument #227",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "4",
+  "maturityDate": "2027-12-16",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 281.08
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1227",
+  "name": "Accrual Instrument #228",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-07-20",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 186.37
+  }
+ },
+ {
+  "id": "1228",
+  "name": "Autocall Instrument #229",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-02-11",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 123.91
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-07-06"
+ },
+ {
+  "id": "1229",
+  "name": "Barrier Instrument #230",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-08-02",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 267.51
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1230",
+  "name": "Accrual Instrument #231",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-11-26",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 68.76
+  }
+ },
+ {
+  "id": "1231",
+  "name": "Autocall Instrument #232",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-09-26",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 219.85
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  },
+  "issueDate": "2026-10-22"
+ },
+ {
+  "id": "1232",
+  "name": "Barrier Instrument #233",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-03-03",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 244.63
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1233",
+  "name": "Accrual Instrument #234",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "5",
+  "maturityDate": "2027-03-22",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 287.21
+  }
+ },
+ {
+  "id": "1234",
+  "name": "Autocall Instrument #235",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-02-19",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 182.36
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-05-08"
+ },
+ {
+  "id": "1235",
+  "name": "Barrier Instrument #236",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "1",
+  "maturityDate": "2027-12-06",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 179.44
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1236",
+  "name": "Accrual Instrument #237",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-04-20",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 223.5
+  }
+ },
+ {
+  "id": "1237",
+  "name": "Autocall Instrument #238",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-02-05",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 163.01
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  },
+  "issueDate": "2026-11-28"
+ },
+ {
+  "id": "1238",
+  "name": "Barrier Instrument #239",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "3",
+  "maturityDate": "2027-12-03",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 185.54
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1239",
+  "name": "Accrual Instrument #240",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "3",
+  "maturityDate": "2027-09-08",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 296.28
+  }
+ },
+ {
+  "id": "1240",
+  "name": "Autocall Instrument #241",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-08-01",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 188.51
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  },
+  "issueDate": "2026-09-05"
+ },
+ {
+  "id": "1241",
+  "name": "Barrier Instrument #242",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "1",
+  "maturityDate": "2027-05-13",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 229.72
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1242",
+  "name": "Accrual Instrument #243",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "2",
+  "maturityDate": "2027-06-21",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 162.49
+  }
+ },
+ {
+  "id": "1243",
+  "name": "Autocall Instrument #244",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-09-21",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 95.49
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-01-27"
+ },
+ {
+  "id": "1244",
+  "name": "Barrier Instrument #245",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "5",
+  "maturityDate": "2027-03-10",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 90.49
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1245",
+  "name": "Accrual Instrument #246",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-05-07",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 289.09
+  }
+ },
+ {
+  "id": "1246",
+  "name": "Autocall Instrument #247",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-11-10",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 183.37
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-10-05"
+ },
+ {
+  "id": "1247",
+  "name": "Barrier Instrument #248",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "5",
+  "maturityDate": "2027-12-20",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 260.63
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1248",
+  "name": "Accrual Instrument #249",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "1",
+  "maturityDate": "2027-01-21",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 116.16
+  }
+ },
+ {
+  "id": "1249",
+  "name": "Autocall Instrument #250",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "5",
+  "maturityDate": "2027-07-20",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 57.57
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  },
+  "issueDate": "2026-05-16"
+ },
+ {
+  "id": "1250",
+  "name": "Barrier Instrument #251",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "4",
+  "maturityDate": "2027-05-15",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 222.15
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1251",
+  "name": "Accrual Instrument #252",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "4",
+  "maturityDate": "2027-04-11",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 85.92
+  }
+ },
+ {
+  "id": "1252",
+  "name": "Autocall Instrument #253",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "3",
+  "maturityDate": "2027-07-05",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 178.75
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  },
+  "issueDate": "2026-08-04"
+ },
+ {
+  "id": "1253",
+  "name": "Barrier Instrument #254",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-04-05",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 62.65
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1254",
+  "name": "Accrual Instrument #255",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-03-27",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 283.44
+  }
+ },
+ {
+  "id": "1255",
+  "name": "Autocall Instrument #256",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-03-16",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 166.7
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  },
+  "issueDate": "2026-02-13"
+ },
+ {
+  "id": "1256",
+  "name": "Barrier Instrument #257",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-04-19",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 62.16
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1257",
+  "name": "Accrual Instrument #258",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-09-01",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 157.73
+  }
+ },
+ {
+  "id": "1258",
+  "name": "Autocall Instrument #259",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "3",
+  "maturityDate": "2027-07-12",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 150.15
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-05-03"
+ },
+ {
+  "id": "1259",
+  "name": "Barrier Instrument #260",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-08-25",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 119.93
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1260",
+  "name": "Accrual Instrument #261",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "4",
+  "maturityDate": "2027-06-26",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 189.46
+  }
+ },
+ {
+  "id": "1261",
+  "name": "Autocall Instrument #262",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-04-20",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 150.35
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  },
+  "issueDate": "2026-03-23"
+ },
+ {
+  "id": "1262",
+  "name": "Barrier Instrument #263",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "4",
+  "maturityDate": "2027-09-15",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 201.57
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1263",
+  "name": "Accrual Instrument #264",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "2",
+  "maturityDate": "2027-07-20",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 260.65
+  }
+ },
+ {
+  "id": "1264",
+  "name": "Autocall Instrument #265",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-09-18",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 227.18
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  },
+  "issueDate": "2026-01-12"
+ },
+ {
+  "id": "1265",
+  "name": "Barrier Instrument #266",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-07-19",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 249.19
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1266",
+  "name": "Accrual Instrument #267",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-10-08",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 62.84
+  }
+ },
+ {
+  "id": "1267",
+  "name": "Autocall Instrument #268",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-09-21",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 204.93
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-11-08"
+ },
+ {
+  "id": "1268",
+  "name": "Barrier Instrument #269",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "5",
+  "maturityDate": "2027-12-04",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 54.73
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1269",
+  "name": "Accrual Instrument #270",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-07-17",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 280.13
+  }
+ },
+ {
+  "id": "1270",
+  "name": "Autocall Instrument #271",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "2",
+  "maturityDate": "2027-09-07",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 131.26
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  },
+  "issueDate": "2026-06-06"
+ },
+ {
+  "id": "1271",
+  "name": "Barrier Instrument #272",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-06-18",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 218.97
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1272",
+  "name": "Accrual Instrument #273",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-05-18",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 106.22
+  }
+ },
+ {
+  "id": "1273",
+  "name": "Autocall Instrument #274",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "3",
+  "maturityDate": "2027-12-07",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 226.25
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  },
+  "issueDate": "2026-09-26"
+ },
+ {
+  "id": "1274",
+  "name": "Barrier Instrument #275",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "3",
+  "maturityDate": "2027-02-19",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 185.8
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1275",
+  "name": "Accrual Instrument #276",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "3",
+  "maturityDate": "2027-01-10",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 69.76
+  }
+ },
+ {
+  "id": "1276",
+  "name": "Autocall Instrument #277",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "3",
+  "maturityDate": "2027-12-16",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 100.52
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": false
+  },
+  "issueDate": "2026-12-09"
+ },
+ {
+  "id": "1277",
+  "name": "Barrier Instrument #278",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "1",
+  "maturityDate": "2027-10-24",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 109.82
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1278",
+  "name": "Accrual Instrument #279",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-01-04",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 132.57
+  }
+ },
+ {
+  "id": "1279",
+  "name": "Autocall Instrument #280",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 5000000,
+  "tenor": "1",
+  "maturityDate": "2027-11-25",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 51.3
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-08-16"
+ },
+ {
+  "id": "1280",
+  "name": "Barrier Instrument #281",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "3",
+  "maturityDate": "2027-06-10",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 64.79
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1281",
+  "name": "Accrual Instrument #282",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "5",
+  "maturityDate": "2027-12-24",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 278.31
+  }
+ },
+ {
+  "id": "1282",
+  "name": "Autocall Instrument #283",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "4",
+  "maturityDate": "2027-03-02",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 246.99
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": false
+  },
+  "issueDate": "2026-05-02"
+ },
+ {
+  "id": "1283",
+  "name": "Barrier Instrument #284",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 800000,
+  "tenor": "3",
+  "maturityDate": "2027-10-20",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 282.11
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1284",
+  "name": "Accrual Instrument #285",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 5000000,
+  "tenor": "2",
+  "maturityDate": "2027-09-15",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 98.2
+  }
+ },
+ {
+  "id": "1285",
+  "name": "Autocall Instrument #286",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "3",
+  "maturityDate": "2027-03-24",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 212.07
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-06-26"
+ },
+ {
+  "id": "1286",
+  "name": "Barrier Instrument #287",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-11-25",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 93.87
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1287",
+  "name": "Accrual Instrument #288",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-07-22",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 96.2
+  }
+ },
+ {
+  "id": "1288",
+  "name": "Autocall Instrument #289",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 1200000,
+  "tenor": "4",
+  "maturityDate": "2027-06-08",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 115.2
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": true
+  },
+  "issueDate": "2026-05-11"
+ },
+ {
+  "id": "1289",
+  "name": "Barrier Instrument #290",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "5",
+  "maturityDate": "2027-12-19",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 115.39
+  },
+  "barrier": {
+   "level": 0.75,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1290",
+  "name": "Accrual Instrument #291",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 800000,
+  "tenor": "1",
+  "maturityDate": "2027-08-10",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 151.35
+  }
+ },
+ {
+  "id": "1291",
+  "name": "Autocall Instrument #292",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-11-10",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 203.66
+  },
+  "barrier": {
+   "level": 0.7,
+   "monitoring": false
+  },
+  "issueDate": "2026-08-05"
+ },
+ {
+  "id": "1292",
+  "name": "Barrier Instrument #293",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 5000000,
+  "tenor": "5",
+  "maturityDate": "2027-06-14",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 187.31
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": false
+  }
+ },
+ {
+  "id": "1293",
+  "name": "Accrual Instrument #294",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "2",
+  "maturityDate": "2027-11-25",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 268.28
+  }
+ },
+ {
+  "id": "1294",
+  "name": "Autocall Instrument #295",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "5",
+  "maturityDate": "2027-08-17",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 140.45
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  },
+  "issueDate": "2026-09-17"
+ },
+ {
+  "id": "1295",
+  "name": "Barrier Instrument #296",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 1200000,
+  "tenor": "5",
+  "maturityDate": "2027-09-05",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 132.03
+  },
+  "barrier": {
+   "level": 0.85,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1296",
+  "name": "Accrual Instrument #297",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 1200000,
+  "tenor": "5",
+  "maturityDate": "2027-08-03",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "local-vol",
+   "baseStrike": 161.37
+  }
+ },
+ {
+  "id": "1297",
+  "name": "Autocall Instrument #298",
+  "type": "autocall",
+  "currency": "USD",
+  "notional": 800000,
+  "tenor": "4",
+  "maturityDate": "2027-03-17",
+  "underlyings": [
+   "AAPL",
+   "MSFT",
+   "NVDA"
+  ],
+  "pricing": {
+   "model": "black-scholes",
+   "baseStrike": 164.2
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  },
+  "issueDate": "2026-11-26"
+ },
+ {
+  "id": "1298",
+  "name": "Barrier Instrument #299",
+  "type": "barrier",
+  "currency": "EUR",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-07-09",
+  "underlyings": [
+   "TSLA",
+   "AMD",
+   "PLTR",
+   "META"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 236.45
+  },
+  "barrier": {
+   "level": 0.65,
+   "monitoring": true
+  }
+ },
+ {
+  "id": "1299",
+  "name": "Accrual Instrument #300",
+  "type": "accrual",
+  "currency": "GBP",
+  "notional": 2500000,
+  "tenor": "1",
+  "maturityDate": "2027-09-02",
+  "underlyings": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "ADA",
+   "XRP"
+  ],
+  "pricing": {
+   "model": "montecarlo",
+   "baseStrike": 296.53
+  }
+ }
+]

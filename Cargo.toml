@@ -1,0 +1,24 @@
+[package]
+name = "sonicetl"
+version = "0.1.0"
+edition = "2021"
+description = "sonicetl core: Rust (pyo3 + sonic-rs) native whole-ETL engine exposed to Python"
+license = "MIT"
+
+[lib]
+name = "sonicetl"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+pyo3 = { version = "0.23", features = ["abi3-py39", "extension-module"] }
+sonic-rs = "0.5.8"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_yaml = "0.9.34"
+parquet = "59.2.0"
+arrow-array = "59.2.0"
+arrow-schema = "59.2.0"
+mimalloc = "0.1.43"
+
+[profile.release]
+lto = true
+codegen-units = 1

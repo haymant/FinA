@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sonicetl.example/schema/etl.schema.json",
+  "title": "sonicetl ETL pipeline schema",
+  "description": "The official ETL YAML schema consumed by the sonicetl native core. A pipeline declares one or more output datasets derived from a JSON input document; each record is parsed natively (sonic-rs) and the declared field expressions streamed into typed Parquet columns.",
+  "type": "object",
+  "required": ["source", "datasets"],
+  "properties": {
+    "pipeline_name": { "type": "string", "description": "Human-readable pipeline name." },
+    "source": {
+      "type": "object",
+      "required": ["file_path"],
+      "properties": {
+        "file_path": { "type": "string", "description": "Path to the input JSON document (an array of records, or a single object)." },
+        "json_path": { "type": "string", "description": "Optional root path within the JSON to the record array (informational)." }
+      }
+    },
+    "datasets": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/dataset" }
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "format": { "type": "string", "enum": ["parquet"] },
+        "output_directory": { "type": "string" },
+        "partition_by": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "$defs": {
+    "dataset": {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "name": { "type": "string", "description": "Output dataset name; becomes <name>.parquet." },
+        "type": {
+          "type": "string",
+          "enum": ["raw", "master", "unwound"],
+          "description": "raw/master: one output row per input record. unwound: zero-or-more rows per record, driven by unwind_rules."
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "expression"],
+            "properties": {
+              "name": { "type": "string", "description": "Output column name." },
+              "expression": {
+                "type": "string",
+                "description": "Field expression. See docs/schema.md for the grammar."
+              }
+            }
+          }
+        },
+        "unwind_rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "condition", "unwind_path", "output_alias"],
+            "properties": {
+              "name": { "type": "string" },
+              "condition": { "type": "string", "description": "e.g. \"$.instrumentName CONTAINS 'FCN'\"" },
+              "unwind_path": { "type": "string", "description": "JSON path to an array, e.g. \"$.KIKOSelect.underlying\"" },
+              "output_alias": { "type": "string", "description": "Alias under which each element is exposed to expressions, e.g. \"symbol\" -> \"$.symbol\"." }
+            }
+          }
+        }
+      }
+    }
+  }
+}

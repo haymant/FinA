@@ -1,0 +1,43 @@
+pipeline_name: instrument_demo
+source:
+  file_path: uni.json
+
+datasets:
+  # raw: one row per input record -------------------------------------------
+  - name: instrument_raw
+    type: raw
+    fields:
+      - {name: instrument_id, expression: "coalesce($.id, $.name)"}
+      - {name: first_underlying, expression: "$.underlyings[0]"}
+      - {name: notional, expression: "cast($.notional as double)"}
+      - {name: raw_json, expression: "to_json_string($)"}
+
+  # master: normalized per-record view --------------------------------------
+  - name: instrument_master
+    type: master
+    fields:
+      - {name: instrument_id, expression: "coalesce($.id, $.name)"}
+      - {name: instrument_name, expression: "$.name"}
+      - {name: currency, expression: "coalesce($.currency, 'USD')"}
+      - {name: notional, expression: "cast($.notional as double)"}
+      - {name: tenor_years, expression: "cast($.tenor as integer)"}
+      - {name: issue_date, expression: "coalesce($.issueDate, 'UNKNOWN')"}
+      - {name: maturity_date, expression: "coalesce($.maturityDate, '')"}
+      - {name: barrier_level, expression: "cast(coalesce($.barrier.level, '0') as double)"}
+      - {name: monitoring, expression: "coalesce($.barrier.monitoring, false)"}
+      - {name: model, expression: "coalesce($.pricing.model, 'black-scholes')"}
+      - {name: base_strike, expression: "cast($.pricing.baseStrike as double)"}
+
+  # unwound: one row per array element when a condition matches -------------
+  - name: instrument_unwound
+    type: unwound
+    unwind_rules:
+      - {name: unwind_autocall, condition: "$.type CONTAINS 'auto'",
+         unwind_path: "$.underlyings", output_alias: "symbol"}
+      - {name: unwind_accrual, condition: "$.type = 'accrual'",
+         unwind_path: "$.underlyings", output_alias: "symbol"}
+    fields:
+      - {name: instrument_id, expression: "coalesce($.id, $.name)"}
+      - {name: parent_type, expression: "$.type"}
+      - {name: symbol, expression: "$.symbol"}
+      - {name: notional, expression: "cast($.notional as double)"}
