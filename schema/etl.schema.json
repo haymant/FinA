@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://sonicetl.example/schema/etl.schema.json",
-  "title": "sonicetl ETL pipeline schema",
-  "description": "The official ETL YAML schema consumed by the sonicetl native core. The root document is a list of pipelines; each pipeline declares named sources (file/duckdb URIs) and datasets. Each record is parsed natively (sonic-rs) and the declared field expressions streamed into typed columns: a parquet file/directory, an in-memory duckdb table, or a duckdb-file table. Datasets may LEFT JOIN against tables produced earlier in the same run_pipelines call.",
+  "$id": "https://fina.example/schema/etl.schema.json",
+  "title": "FinA ETL pipeline schema",
+  "description": "The official ETL YAML schema consumed by the FinA native core. The root document is a list of pipelines; each pipeline declares named sources (file/duckdb URIs) and datasets. Each record is parsed natively (sonic-rs) and the declared field expressions streamed into typed columns: a parquet file/directory, an in-memory duckdb table, or a duckdb-file table. Datasets may LEFT JOIN against tables produced earlier in the same run_pipelines call.",
   "type": "object",
   "required": ["pipelines"],
   "properties": {

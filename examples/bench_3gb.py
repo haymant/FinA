@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Benchmark sonicetl on large JSON, mirroring the 3 GB experiment.
+"""Benchmark FinA on large JSON, mirroring the 3 GB experiment.
 
 Measures two things on the 3 GB `data/uni.json` corpus:
 
-1. **Whole ETL** — `sonicetl.run_pipelines(config)` streaming native parse +
+1. **Whole ETL** — `fina.run_pipelines(config)` streaming native parse +
    field extraction + Parquet write, plus peak RSS.
-2. **Pure parse (reference)** — materializing the DOM with `sonicetl.loads`
+2. **Pure parse (reference)** — materializing the DOM with `fina.loads`
    (sonic-rs), `orjson.loads`, and stdlib `json.loads`, reported for context.
 
 Usage:
@@ -27,7 +27,7 @@ import resource
 import time
 from pathlib import Path
 
-import sonicetl
+import fina
 
 
 def _peak_rss_kb() -> int:
@@ -38,10 +38,10 @@ def bench_whole_etl(config: str, out_dir: str) -> None:
     os.makedirs(out_dir, exist_ok=True)
     base_peak = _peak_rss_kb()
     t0 = time.perf_counter()
-    result = sonicetl.run_pipelines(config)
+    result = fina.run_pipelines(config)
     wall = (time.perf_counter() - t0) * 1000.0
     peak = _peak_rss_kb()
-    print(f"\nWhole ETL via sonicetl.run_pipelines (native sonic-rs)")
+    print(f"\nWhole ETL via fina.run_pipelines (native sonic-rs)")
     print(f"  rows              : {result.rows}")
     print(f"  breakdown         : {result.breakdown()}")
     print(f"  ETL total (per-dataset timings): {result.total_etl_ms():9.1f} ms")
@@ -80,7 +80,7 @@ def main() -> None:
     bench_whole_etl(yaml_text, args.out)
 
     print("\nPure parse (materializing whole DOM — reference only):")
-    bench_pure_parse("sonicetl.loads", sonicetl.loads, data)
+    bench_pure_parse("fina.loads", fina.loads, data)
     if not args.skip_orjson:
         import orjson
 

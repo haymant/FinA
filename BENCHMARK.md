@@ -1,4 +1,4 @@
-# sonicetl benchmarks
+# FinA benchmarks
 
 Results and methodology for the ETL engine and the scheduler kernel. Everything
 here is reproducible with the scripts linked below; any perf-sensitive change
@@ -18,7 +18,7 @@ the repo by size; reproduce via the `rust_simdetl` harness or a large generated
 `uni.json`. `disk read` (~2 s) is excluded from the ETL total because it is
 identical for every path.
 
-### Whole ETL — `sonicetl.run_pipelines` (native sonic-rs, streaming, no DOM)
+### Whole ETL — `fina.run_pipelines` (native sonic-rs, streaming, no DOM)
 
 | dataset        | time     |
 |----------------|----------|
@@ -143,13 +143,13 @@ The gap between `fanout`/`python` and `batch`/`auto`, and between `stream` and
 ### Native kernel reference
 
 A pure-Rust actor-path benchmark (no Python, same queue/snapshot/threads) runs
-as an ignored test. It submits a bounded **burst** (`SONICETL_KERNEL_BENCH_COUNT`,
+as an ignored test. It submits a bounded **burst** (`FINA_KERNEL_BENCH_COUNT`,
 default 20k) and reports how many reach a terminal state during a bounded settle
-window (`SONICETL_KERNEL_BENCH_SETTLE_MS`, default 500):
+window (`FINA_KERNEL_BENCH_SETTLE_MS`, default 500):
 
 ```
-SONICETL_KERNEL_BENCH_COUNT=20000 SONICETL_KERNEL_BENCH_SLOTS=256 \
-  SONICETL_KERNEL_BENCH_SETTLE_MS=800 \
+FINA_KERNEL_BENCH_COUNT=20000 FINA_KERNEL_BENCH_SLOTS=256 \
+  FINA_KERNEL_BENCH_SETTLE_MS=800 \
   cargo test --release -- --ignored --nocapture kernel_throughput
 ```
 
@@ -181,7 +181,7 @@ longer decouples throughput (see the flat max-inflight sweep below).
 To be reproduced per-machine (nothing about the scheduler is hardware-tuned);
 actual runs should record, alongside the tables:
 
-* hardware (CPU cores/model, RAM), OS, Python version, sonicetl commit;
+* hardware (CPU cores/model, RAM), OS, Python version, fina commit;
 * `workers` (slots), `mode`, `submit`, `hook`, `max-inflight`, `batch-size`;
 * submitted / finished / in-flight at the 60 s deadline;
 * `tasks/sec`.

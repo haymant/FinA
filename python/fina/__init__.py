@@ -1,7 +1,7 @@
-"""sonicetl — a native whole-ETL Python library backed by a Rust core (sonic-rs).
+"""FinA — a native whole-ETL Python library backed by a Rust core (sonic-rs).
 
-sonicetl is designed like orjson: the heavy lifting happens in a compiled Rust
-extension (``sonicetl._core``) while the Python layer exposes a clean, small API.
+FinA is designed like orjson: the heavy lifting happens in a compiled Rust
+extension (``fina._core``) while the Python layer exposes a clean, small API.
 
 Public surface
 --------------
@@ -21,8 +21,8 @@ Public surface
 
 Run a set of pipelines::
 
-    import sonicetl
-    result = sonicetl.run_pipelines("examples/demo/pipelines.yml")
+    import fina
+    result = fina.run_pipelines("examples/demo/pipelines.yml")
     print(result.rows)    # {"spot": 12, "products": 36}
     print(result.timing)  # [{step, ms}, ...]
 """
@@ -350,7 +350,7 @@ class PipelinesConfig:
                      datasets=[Dataset("spot", "raw", to=Output("memory://spot"),
                                        fields=[Field("name", "$._id")])]),
         ])
-        result = sonicetl.run_pipelines(cfg)
+        result = fina.run_pipelines(cfg)
 
     An optional ``execution`` block turns the same pipelines into a scheduled
     run (see ``docs/scheduler.md`` and ``run_pipelines_scheduled``)::
@@ -361,7 +361,7 @@ class PipelinesConfig:
             ExecutionStage([GroupNode(pipeline="fanout",
                                       partition="partition(instruments.name, 10)")]),
         ])
-        result = sonicetl.run_pipelines_scheduled(cfg.to_yaml(), workers=10)
+        result = fina.run_pipelines_scheduled(cfg.to_yaml(), workers=10)
     """
 
     pipelines: Sequence[Pipeline] = field(default_factory=list)
@@ -422,7 +422,7 @@ def run_pipelines(
 
     Examples
     --------
-    >>> r = sonicetl.run_pipelines("examples/demo/pipelines.yml")
+    >>> r = fina.run_pipelines("examples/demo/pipelines.yml")
     >>> r.rows
     {'spot': 12, 'products': 36}
     """
@@ -505,7 +505,7 @@ ETL_SCHEMA = DOC
 
 def main() -> None:  # pragma: no cover - convenience CLI
     if len(sys.argv) < 2:
-        print("usage: python -m sonicetl <pipelines.yml>")
+        print("usage: python -m fina <pipelines.yml>")
         return
     config = sys.argv[1]
     r = run_pipelines(config)

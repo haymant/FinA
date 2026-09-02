@@ -225,7 +225,7 @@ impl TaskHook for AutoFinishHook {
 }
 
 /// Hook that delegates every lifecycle callback to a Python object (a
-/// `sonicetl.scheduler.TaskHook` subclass). Each method is invoked with the GIL
+/// `fina.scheduler.TaskHook` subclass). Each method is invoked with the GIL
 /// acquired on the dispatching thread.
 pub struct PyHook {
     obj: Py<PyAny>,
@@ -510,7 +510,7 @@ impl SchedulerActor {
     /// Fill free slots from the priority queue; dispatch each Pending task on
     /// its own OS thread.
     fn dispatch(&mut self) {
-        if std::env::var_os("SONICETL_TRACE").is_some()
+        if std::env::var_os("FINA_TRACE").is_some()
             && !self.queue.is_empty()
         {
             eprintln!(
@@ -543,7 +543,7 @@ impl SchedulerActor {
             let id = snap.id.clone();
             let hook = self.hook.clone();
             let notifier = self.me.clone().expect("actor started");
-            if std::env::var_os("SONICETL_TRACE").is_some() {
+            if std::env::var_os("FINA_TRACE").is_some() {
                 eprintln!("[trace] dispatch spawn {} (running={})", id, self.running);
             }
             spawn_thread(format!("sched-{id}"), move || {
@@ -576,7 +576,7 @@ impl SchedulerActor {
         let snap = task.clone();
         let hook = self.hook.clone();
         let n = self.me.clone().expect("actor started");
-        if std::env::var_os("SONICETL_TRACE").is_some() {
+        if std::env::var_os("FINA_TRACE").is_some() {
             eprintln!("[trace] finish_task -> spawn hook thread");
         }
         spawn_thread(format!("sched-finish-{id}"), move || {
@@ -774,7 +774,7 @@ impl Handler<CmdKill> for SchedulerActor {
 impl Handler<CmdFinish> for SchedulerActor {
     type Result = ();
     fn handle(&mut self, m: CmdFinish, _ctx: &mut Self::Context) {
-        if std::env::var_os("SONICETL_TRACE").is_some() {
+        if std::env::var_os("FINA_TRACE").is_some() {
             eprintln!("[trace] finish CmdFinish id={}", m.id);
         }
         self.finish_task(&m.id, m.result, m.checkpoint);
@@ -864,7 +864,7 @@ impl Handler<CmdRestore> for SchedulerActor {
     type Result = ();
     fn handle(&mut self, m: CmdRestore, _ctx: &mut Self::Context) {
         let n = m.tasks.len();
-        if std::env::var_os("SONICETL_TRACE").is_some() {
+        if std::env::var_os("FINA_TRACE").is_some() {
             eprintln!("[trace] restore n={} enter", n);
         }
         for mut t in m.tasks {
@@ -895,7 +895,7 @@ impl Handler<CmdRestore> for SchedulerActor {
             }
         }
         self.dispatch();
-        if std::env::var_os("SONICETL_TRACE").is_some() {
+        if std::env::var_os("FINA_TRACE").is_some() {
             eprintln!("[trace] restore n={} exit", n);
         }
     }
@@ -932,7 +932,7 @@ impl SchedulerRuntime {
         let (stop_tx, stop_rx) = tokio::sync::oneshot::channel();
         let snap2 = snapshot.clone();
         std::thread::Builder::new()
-            .name("sonicetl-scheduler".to_string())
+            .name("fina-scheduler".to_string())
             .spawn(move || {
                 actix_rt::System::new().block_on(async move {
                     let addr = SchedulerActor::new(hook, snap2, slots).start();
@@ -1469,7 +1469,7 @@ mod tests {
     //
     //   cargo test --release -- --ignored --nocapture kernel_throughput
     //
-    // Tune with SONICETL_KERNEL_BENCH_COUNT (default 20k), *_SLOTS (default
+    // Tune with FINA_KERNEL_BENCH_COUNT (default 20k), *_SLOTS (default
     // 256) and *_SETTLE_MS (default 500). It submits a bounded number of
     // tasks (a burst) and reports how many reach a terminal state during the
     // settle window — the native dispatch path with no Python on the loop.
@@ -1477,7 +1477,7 @@ mod tests {
     #[test]
     #[ignore]
     fn kernel_throughput() {
-        let slots = std::env::var("SONICETL_KERNEL_BENCH_SLOTS")
+        let slots = std::env::var("FINA_KERNEL_BENCH_SLOTS")
             .ok()
             .and_then(|s| s.parse::<usize>().ok())
             .unwrap_or(256);
@@ -1487,7 +1487,7 @@ mod tests {
             let addr = SchedulerActor::new(Arc::new(AutoFinishHook), snapshot.clone(), slots).start();
 
             const BATCH: usize = 1000;
-            let count = std::env::var("SONICETL_KERNEL_BENCH_COUNT")
+            let count = std::env::var("FINA_KERNEL_BENCH_COUNT")
                 .ok()
                 .and_then(|s| s.parse::<usize>().ok())
                 .unwrap_or(20_000);
@@ -1527,7 +1527,7 @@ mod tests {
             // time, and the metric of interest is terminal throughput, not
             // drain completion.
             let settle_for = Duration::from_millis(
-                std::env::var("SONICETL_KERNEL_BENCH_SETTLE_MS")
+                std::env::var("FINA_KERNEL_BENCH_SETTLE_MS")
                     .ok()
                     .and_then(|s| s.parse::<u64>().ok())
                     .unwrap_or(500),

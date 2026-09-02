@@ -1,6 +1,6 @@
-# sonicetl ETL schema (official)
+# FinA ETL schema (official)
 
-sonicetl consumes an **ETL YAML document** whose root is `pipelines: [ ... ]`.
+FinA consumes an **ETL YAML document** whose root is `pipelines: [ ... ]`.
 Each *pipeline* declares any number of named **sources** (inputs) and
 **datasets** (outputs). Every pipeline run:
 
@@ -211,7 +211,7 @@ pipelines:
           - {name: spot, expression: "cast(mkt.spot as double)"}
 ```
 
-Run with `sonicetl.run_pipelines("examples/demo/pipelines.yml")`.
+Run with `fina.run_pipelines("examples/demo/pipelines.yml")`.
 
 ## Programmatic construction
 
@@ -219,33 +219,33 @@ The Python surface exposes the schema as dataclasses, so you can build a config
 without hand-writing YAML:
 
 ```python
-import sonicetl
+import fina
 
-cfg = sonicetl.PipelinesConfig([
-    sonicetl.Pipeline(
+cfg = fina.PipelinesConfig([
+    fina.Pipeline(
         name="mktDataETL",
-        sources=[sonicetl.Source("spot", "file://spot.json")],
+        sources=[fina.Source("spot", "file://spot.json")],
         datasets=[
-            sonicetl.Dataset("spot", "raw", to=sonicetl.Output("memory://spot"),
+            fina.Dataset("spot", "raw", to=fina.Output("memory://spot"),
                              fields=[
-                                 sonicetl.Field("name", "$._id"),
-                                 sonicetl.Field("spot", "cast($.spot as double)"),
+                                 fina.Field("name", "$._id"),
+                                 fina.Field("spot", "cast($.spot as double)"),
                              ]),
         ],
     ),
-    sonicetl.Pipeline(
+    fina.Pipeline(
         name="prodETL",
-        sources=[sonicetl.Source("uni", "file://uni.json")],
+        sources=[fina.Source("uni", "file://uni.json")],
         datasets=[
-            sonicetl.Dataset(
+            fina.Dataset(
                 "products", "unwound", source="uni",
-                to=sonicetl.Output("file://out/products", partition_by=["currency"]),
-                unwind_rules=[sonicetl.UnwindRule("u", "$.underlyings[0]", "$.underlyings", "u")],
-                join=sonicetl.Join("mkt", "memory://spot", "$.u", "name", ["spot"]),
+                to=fina.Output("file://out/products", partition_by=["currency"]),
+                unwind_rules=[fina.UnwindRule("u", "$.underlyings[0]", "$.underlyings", "u")],
+                join=fina.Join("mkt", "memory://spot", "$.u", "name", ["spot"]),
                 fields=[
-                    sonicetl.Field("instrument_id", "coalesce($.id, $.name)"),
-                    sonicetl.Field("symbol", "$.u"),
-                    sonicetl.Field("spot", "cast(mkt.spot as double)"),
+                    fina.Field("instrument_id", "coalesce($.id, $.name)"),
+                    fina.Field("symbol", "$.u"),
+                    fina.Field("spot", "cast(mkt.spot as double)"),
                 ],
             ),
         ],
@@ -255,4 +255,4 @@ yml = cfg.to_yaml()
 ```
 
 You can also pass the dataclass config (or a plain `dict`, or a YAML file path)
-directly to `sonicetl.run_pipelines(config)`.
+directly to `fina.run_pipelines(config)`.

@@ -1,4 +1,4 @@
-//! sonicetl core: a native whole-ETL engine (sonic-rs) exposed to Python via
+//! FinA core: a native whole-ETL engine (sonic-rs) exposed to Python via
 //! PyO3, in the spirit of orjson — a thin Python interface over a fast Rust core.
 //!
 //! Public surface:
@@ -143,7 +143,7 @@ fn scheduler_new(py: Python<'_>, workers: usize, hook: Option<PyObject>) -> PyRe
 fn scheduler_cmd(py: Python<'_>, handle: u64, command_json: &str) -> PyResult<()> {
     let cmd: scheduler::SchedCmd = sonic_rs::from_str(command_json)
         .map_err(|e| PyValueError::new_err(format!("bad scheduler command JSON: {e}")))?;
-    if std::env::var_os("SONICETL_TRACE").is_some() {
+    if std::env::var_os("FINA_TRACE").is_some() {
         eprintln!("[trace] scheduler_cmd enter");
     }
     let rt = {
@@ -156,7 +156,7 @@ fn scheduler_cmd(py: Python<'_>, handle: u64, command_json: &str) -> PyResult<()
             .ok_or_else(|| PyValueError::new_err(format!("no scheduler with handle {handle}")))?
     };
     py.allow_threads(move || rt.send(cmd));
-    if std::env::var_os("SONICETL_TRACE").is_some() {
+    if std::env::var_os("FINA_TRACE").is_some() {
         eprintln!("[trace] scheduler_cmd sent");
     }
     Ok(())

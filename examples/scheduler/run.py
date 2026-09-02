@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""sonicetl scheduler example — run `examples/scheduler/pipelines.yml` through the
+"""fina scheduler example — run `examples/scheduler/pipelines.yml` through the
 scheduler: stage 1 (market -> in-memory duckdb), stage 2 (instruments unwind +
 join, one parquet), stage 3 (fan-out by instrument name over 10 workers, one
 parquet per partition).
 
-Run from the `sonicetl` directory after installing the package:
+Run from the `fina` directory after installing the package:
 
     pip install .
     python examples/scheduler/run.py
@@ -15,13 +15,13 @@ from __future__ import annotations
 import json
 import os
 
-import sonicetl
+import fina
 
 
 def main() -> None:
     here = os.path.dirname(os.path.abspath(__file__))
 
-    print("sonicetl scheduler example")
+    print("fina scheduler example")
     print("=" * 60)
 
     run_dir = f"{here}/out"
@@ -32,7 +32,7 @@ def main() -> None:
         yaml_text = f.read()
 
     # 1) show the expansion to scheduler tasks (nothing runs) --------------------
-    plan = json.loads(sonicetl.expand_etl_config(yaml_text, retries=2))
+    plan = json.loads(fina.expand_etl_config(yaml_text, retries=2))
     print("\nexpand_etl_config -> task plan")
     for si, stage in enumerate(plan["stages"], 1):
         print(f"  stage {si}: {len(stage)} task(s)")
@@ -48,7 +48,7 @@ def main() -> None:
 
     # 2) run the whole thing through the scheduler -------------------------------
     print("\nrun_pipelines_scheduled (workers=10)")
-    result = sonicetl.run_pipelines_scheduled(yaml_text, workers=10, retries=2, poll_ms=50)
+    result = fina.run_pipelines_scheduled(yaml_text, workers=10, retries=2, poll_ms=50)
     print("  ok      :", result.ok)
     print("  rows    :", result.rows)
     print("  timing  :", result.timing)

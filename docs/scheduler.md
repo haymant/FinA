@@ -1,4 +1,4 @@
-# sonicetl scheduler — Rust–Python durable OS-style task scheduler
+# FinA scheduler — Rust–Python durable OS-style task scheduler
 
 Status: **implemented** (Rust kernel + ETL intake + Python bindings + tests).
 
@@ -202,8 +202,8 @@ at its (optionally elevated) priority.
 
 ```python
 import json
-import sonicetl
-from sonicetl.scheduler import Scheduler, TaskHook, run_pipelines_scheduled
+import fina
+from fina.scheduler import Scheduler, TaskHook, run_pipelines_scheduled
 
 class MyHook(TaskHook):
     """Python hooks receive task dicts on the task's own OS thread."""
@@ -383,7 +383,7 @@ Rust modules:
 - `src/store.rs` — `SharedDb`, `SharedStore` (scheduler-wide in-memory store).
 - `src/plazy.rs` — `run_pipeline_task_shared(cfg, name, task, store)`.
 
-PyO3 functions on `sonicetl._core`:
+PyO3 functions on `fina._core`:
 - `scheduler_new(workers, hook) -> handle`
 - `scheduler_cmd(handle, json)` — `start/pause/resume/kill/finish/reschedule/
   checkpoint/update/restore/set_slots`
@@ -393,7 +393,7 @@ PyO3 functions on `sonicetl._core`:
 - `etl_scheduler_run(yaml, workers, retries, poll_ms) -> result JSON`
   (expand → schedule → wait → aggregate, one native call)
 
-Python wrapper (`python/sonicetl/scheduler.py`):
+Python wrapper (`python/fina/scheduler.py`):
 - `Scheduler` — context-manager over the native handle: `start()`, `cmd()`,
   `query() -> list[TaskInfo]`, `state(id)`, `wait(ids)`, `close()`.
 - `TaskHook` — Python base class for the six lifecycle callbacks.

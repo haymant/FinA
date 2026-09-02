@@ -1,12 +1,12 @@
 [package]
-name = "sonicetl"
+name = "fina"
 version = "0.1.0"
 edition = "2021"
-description = "sonicetl core: Rust (pyo3 + sonic-rs) native whole-ETL engine exposed to Python"
+description = "FinA (financial agent) core: Rust (pyo3 + sonic-rs) native whole-ETL engine exposed to Python"
 license = "MIT"
 
 [lib]
-name = "sonicetl"
+name = "fina"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]

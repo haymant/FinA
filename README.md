@@ -1,20 +1,37 @@
-# sonicetl
+# FinA
 
-**Native whole-ETL for Python, backed by a Rust core built on [sonic-rs].**
+**FinA (financial agent) — a native Python library backed by a Rust core: a
+durable, OS-process-scheduler-like task core on top of which financial tasks
+(ETL, greeks, P&L, …) are built.**
 
 The heavy lifting happens in a compiled Rust extension (PyO3) while Python sees
-a small, clean API. It runs a *whole ETL* (read JSON → parse each record
-natively → evaluate YAML field expressions directly against the native
-`sonic_rs::Value` → stream typed columns to Parquet or a duckdb table) **without
-ever materializing a `serde_json::Value` DOM**.
+a small, clean API. At the center is an **actix task scheduler** that behaves
+like an OS process scheduler: tasks with priorities, concurrency slots, retries,
+pause/resume, checkpoints and durable state, driven from Python through a single
+`Scheduler` handle. **ETL is the first built-in task type** — read JSON → parse
+each record natively → evaluate YAML field expressions directly against the
+native `sonic_rs::Value` → stream typed columns to Parquet or a duckdb table —
+**without ever materializing a `serde_json::Value` DOM**. More task types (greek
+sensitivities, P&L calculation, …) plug in on top of the same core.
 
 ```
-JSON input ──► (streaming) ──► sonic-rs parse per record ──► native expression
-eval ──► typed columns ──► parquet file / memory:// table / duckdb:// table
+                    ┌──────────────────────────────────────────┐
+  Python API ──────►│  FinA core (Rust)                        │
+                    │  ┌────────────────────────────────────┐  │
+                    │  │ task scheduler (OS scheduler-like) │  │
+                    │  │  priorities · slots · retries      │  │
+                    │  │  pause/resume · checkpoints · durab│  │
+                    │  └────────────────────────────────────┘  │
+                    │  ┌────────────────────────────────────┐  │
+                    │  │ built-in task types                │  │
+                    │  │  • ETL (native sonic-rs, no DOM)   │  │
+                    │  │  • … greeks, P&L, more to come     │  │
+                    │  └────────────────────────────────────┘  │
+                    └──────────────────────────────────────────┘
 ```
 
-The same engine that was benchmarked here as a CLI is now behind a Python
-library.
+The scheduler core is what the project is named after — everything else is a
+task kind running on it.
 
 [sonic-rs]: https://github.com/cloudwego/sonic-rs
 
@@ -22,9 +39,17 @@ library.
 
 ## Features
 
+- **Scheduler core** — a Rust/actix task scheduler that behaves like an OS
+  process scheduler: priority queue, concurrency slots (`workers`), retries with
+  backoff, pause/resume, checkpoints, durable task state, and a single shared
+  snapshot. Driven from Python via `fina.Scheduler` (see
+  [`docs/scheduler.md`](docs/scheduler.md)).
+- **Scheduled pipelines** — `run_pipelines_scheduled(config, workers=…)` runs an
+  ETL plan as a dependency graph of scheduler tasks: serial stages, concurrent
+  fan-out partitions, retries, all through the scheduler core.
+- **ETL task type** — `run_pipelines(config)` runs one or more pipelines, each
+  with named sources and datasets, in a single native call.
 - **JSON codecs** — `loads` / `dumps` powered by sonic-rs.
-- **Whole-ETL pipelines** — `run_pipelines(config)` runs one or more pipelines,
-  each with named sources and datasets, in a single native call.
 - **Store URIs** — every source and target is a duckdb-style URI:
   `file://` (parquet/JSON), `memory://<table>` (in-memory duckdb, shared across
   the call), or `duckdb://<file>?table=<t>` (file-backed tables).
@@ -53,9 +78,9 @@ Prebuilt wheels are published to [PyPI], so installing from a package manager
 is a one-liner — no Rust toolchain required. Requires **Python ≥ 3.9**.
 
 ```bash
-pip install sonicetl
+pip install fina
 # or, with uv:
-uv add sonicetl
+uv add fina
 ```
 
 Wheels are provided per platform/arch (Linux `manylinux`, macOS `x86_64` and
@@ -64,8 +89,8 @@ Wheels are provided per platform/arch (Linux `manylinux`, macOS `x86_64` and
 To install a specific version or into an existing env:
 
 ```bash
-pip install "sonicetl==0.1.0"
-uv pip install sonicetl --python 3.12
+pip install "fina==0.1.0"
+uv pip install fina --python 3.12
 ```
 
 ### Building from source (optional)
@@ -82,10 +107,10 @@ or build a wheel:
 
 ```bash
 maturin build --release
-pip install target/wheels/sonicetl-*.whl
+pip install target/wheels/fina-*.whl
 ```
 
-[PyPI]: https://pypi.org/project/sonicetl
+[PyPI]: https://pypi.org/project/fina
 [maturin]: https://github.com/PyO3/maturin
 
 ---
@@ -93,19 +118,35 @@ pip install target/wheels/sonicetl-*.whl
 ## Quick start
 
 ```python
-import sonicetl
+import time
+import fina
+
+# scheduler core -------------------------------------------------------------
+# no hook = AutoFinishHook: each task finishes as soon as its on_start returns.
+s = fina.Scheduler(workers=4)
+s.cmd({"cmd": "restore", "tasks": [
+    {"id": "t1", "priority": 1, "info": {}},
+    {"id": "t2", "priority": 2, "info": {}},
+]})
+time.sleep(0.05)
+s.counts()   # {'pending': 0, 'running': 0, 'finished': 2, ...}
+s.close()
 
 # JSON codecs ----------------------------------------------------------------
-sonicetl.loads(b'{"a":1,"b":[true,null,"x"]}')
+fina.loads(b'{"a":1,"b":[true,null,"x"]}')
 # {'a': 1, 'b': [True, None, 'x']}
-sonicetl.dumps({"k": [1, 2.5, True]})
+fina.dumps({"k": [1, 2.5, True]})
 # b'{"k":[1,2.5,true]}'
 
-# whole ETL (pipelines) -----------------------------------------------------
-result = sonicetl.run_pipelines("examples/demo/pipelines.yml")
+# the ETL task type (one built-in task kind) --------------------------------
+result = fina.run_pipelines("examples/demo/pipelines.yml")
 result.rows        # {'spot': 12, 'products': 1200, 'fx_pairs': 2}
 result.breakdown() # "pipeline 'mktDataETL' dataset 'spot'=1.3 ms  ..."
 result.total_etl_ms()
+
+# or as a scheduled dependency graph (serial stages + fan-out) --------------
+result = fina.run_pipelines_scheduled(
+    "examples/scheduler/pipelines.yml", workers=10, retries=2)
 ```
 
 The demo runs three pipelines: `mktDataETL` loads a spot reference table into the
@@ -127,12 +168,12 @@ You can pass the config as a **`PipelinesConfig` object**, a plain **`dict`**, a
 **YAML file path**, or a **YAML string**:
 
 ```python
-sonicetl.run_pipelines({"pipelines": [{"name": "x", "datasets": [...]}]})
+fina.run_pipelines({"pipelines": [{"name": "x", "datasets": [...]}]})
 ```
 
 ---
 
-## The ETL YAML schema
+## The ETL task: YAML schema
 
 See **[`docs/schema.md`](docs/schema.md)** for the full reference and
 **[`schema/etl.schema.json`](schema/etl.schema.json)** for the machine-readable
@@ -229,54 +270,102 @@ Column Parquet types are inferred from `cast ... as TYPE` (else string/bool).
 
 ---
 
+## The scheduler core
+
+This is the foundation FinA is built on. It is intentionally shaped like an OS
+process scheduler (hence "financial **agent**": the agent's task engine), and
+task kinds such as ETL are layered on top of it.
+
+Full reference: [`docs/scheduler.md`](docs/scheduler.md).
+
+### Task model
+
+- **Tasks** carry `id`, `priority`, `info`, `max_attempts`, and state
+  (`pending → running → paused / finished / killed`), plus a `checkpoint` and a
+  `result`.
+- **Workers** (`Scheduler(workers=N)`) bound how many tasks run concurrently;
+  the priority queue picks the highest-`priority` task (FIFO tie-break).
+- **Retries** — `reschedule` re-queues a task with a delay; `max_attempts` moves
+  it to `killed` when exhausted.
+- **Pause / resume** — a running task can be paused (its `on_pause` hook fires),
+  then resumed to finish.
+- **Hooks** — a Python `TaskHook` subclass receives `on_start` / `on_finish` /
+  `on_pause` / `on_resume` / `on_kill` / `on_reschedule`; the scheduler gives it
+  no notifier handle, so a hook completes a task via `scheduler.cmd(...)`.
+- **Shared snapshot** — Python reads the durable task list and per-state counts
+  through one lock-free snapshot (`Scheduler.query()` / `Scheduler.counts()`),
+  maintained incrementally (O(1) per task event).
+
+### Wire commands
+
+The scheduler is driven by JSON commands through one handle — `start`, `restore`,
+`finish`, `kill`, `reschedule`, `pause`, `resume`, `checkpoint`, `update`,
+`set_slots` — see `SchedCmd` in `docs/scheduler.md`. Example:
+
+```python
+s = fina.Scheduler(workers=4)          # no hook -> AutoFinishHook
+s.cmd({"cmd": "restore", "tasks": [{"id": "t1", "priority": 1, "info": {}}]})
+s.counts()
+```
+
+### Scheduled pipelines (ETL as a task graph)
+
+`run_pipelines_scheduled(yaml, workers=…)` expands an ETL config into a task
+plan — serial stages, then a fan-out stage where one scheduler task handles each
+partition — and runs it on the scheduler core with retries. See
+[`examples/scheduler/pipelines.yml`](examples/scheduler/pipelines.yml) and
+[`docs/scheduler.md`](docs/scheduler.md).
+
+---
+
 ## Programmatic configuration
 
 ```python
-import sonicetl
+import fina
 
-cfg = sonicetl.PipelinesConfig([
-    sonicetl.Pipeline(
+cfg = fina.PipelinesConfig([
+    fina.Pipeline(
         name="mktDataETL",
-        sources=[sonicetl.Source("spot", "file://spot.json")],
+        sources=[fina.Source("spot", "file://spot.json")],
         datasets=[
-            sonicetl.Dataset("spot", "raw", to=sonicetl.Output("memory://spot"),
-                             fields=[sonicetl.Field("name", "$._id")]),
+            fina.Dataset("spot", "raw", to=fina.Output("memory://spot"),
+                             fields=[fina.Field("name", "$._id")]),
         ],
     ),
-    sonicetl.Pipeline(
+    fina.Pipeline(
         name="prodETL",
-        sources=[sonicetl.Source("uni", "file://uni.json")],
+        sources=[fina.Source("uni", "file://uni.json")],
         datasets=[
-            sonicetl.Dataset(
+            fina.Dataset(
                 "products", "unwound", source="uni",
-                to=sonicetl.Output("file://out/products", partition_by=["currency"]),
-                unwind_rules=[sonicetl.UnwindRule("u", "$.underlyings[0]", "$.underlyings", "u")],
-                join=sonicetl.Join("mkt", "memory://spot", "$.u", "name", ["spot"]),
-                fields=[sonicetl.Field("spot", "cast(mkt.spot as double)")],
+                to=fina.Output("file://out/products", partition_by=["currency"]),
+                unwind_rules=[fina.UnwindRule("u", "$.underlyings[0]", "$.underlyings", "u")],
+                join=fina.Join("mkt", "memory://spot", "$.u", "name", ["spot"]),
+                fields=[fina.Field("spot", "cast(mkt.spot as double)")],
             ),
         ],
     ),
 ])
 yml = cfg.to_yaml()             # -> official ETL YAML string
-sonicetl.run_pipelines(cfg)     # or pass the dict / YAML / path
+fina.run_pipelines(cfg)     # or pass the dict / YAML / path
 ```
 
 ---
 
 ## Examples
 
-- [`examples/demo.py`](examples/demo.py) — codecs + programmatic config +
-  whole-pipelines run with output inspection.
+- [`examples/demo.py`](examples/demo.py) — JSON codecs + programmatic config +
+  a whole-ETL run with output inspection.
 - [`examples/scheduler/run.py`](examples/scheduler/run.py) — the scheduled ETL
   example (market → `memory://`, instruments unwind+join, 10-way fan-out with
   per-worker parquet) through `run_pipelines_scheduled`.
-- [`examples/bench_3gb.py`](examples/bench_3gb.py) — benchmark a whole ETL
-  (defaults to the sample corpus in `examples/demo/`).
+- [`examples/bench_3gb.py`](examples/bench_3gb.py) — benchmark the ETL task type
+  on a multi-GB corpus (defaults to the sample data in `examples/demo/`).
 - [`examples/scheduler/bench.py`](examples/scheduler/bench.py) — benchmark the
-  scheduler's maximum task throughput over a 60-second window.
+  scheduler core's maximum task throughput over a 60-second window.
 
 ```bash
-cd sonicetl
+cd fina
 python examples/demo.py
 python examples/scheduler/run.py
 python examples/bench_3gb.py --config examples/demo/pipelines.yml --input examples/demo/uni.json --out /tmp/pq
@@ -290,39 +379,41 @@ python examples/scheduler/bench.py --duration 60
 Benchmark methodology, known bottlenecks and latest numbers live in
 [`BENCHMARK.md`](BENCHMARK.md):
 
-- **ETL engine** — 3 GB / 150k-record single-core run (per-dataset timing,
-  RSS, the known visibility-regression notes);
-- **Scheduler** — maximum task throughput in one minute
+- **Scheduler core** — maximum task throughput in one minute
   (`examples/scheduler/bench.py`, three modes) plus the native kernel
   reference run (`cargo test --release -- --ignored --nocapture
-  kernel_throughput`).
+  kernel_throughput`);
+- **ETL task type** — 3 GB / 150k-record single-core run (per-dataset timing,
+  RSS, the known visibility-regression notes).
 
 ---
 
 ## Project layout
 
 ```
-sonicetl/
+fina/
   Cargo.toml            Rust crate (cdylib, PyO3) — deps: pyo3, sonic-rs,
                         parquet/arrow (write only), duckdb (bundled), serde_yaml,
                         actix/actix-rt, tokio
-  pyproject.toml        maturin build, package "sonicetl"
+  pyproject.toml        maturin build, package "fina"
   src/
-    lib.rs              PyO3 bindings: run_pipelines, loads, dumps, scheduler_*
-    config.rs           official ETL YAML schema (serde structs)
+    lib.rs              PyO3 bindings: scheduler_*, run_pipelines, loads, dumps
+    scheduler.rs        the scheduler core: actix kernel (queue, states, hooks,
+                        PyHook, durable snapshot)
+    etl_sched.rs        ETL task type: ETL→scheduler expansion + run_scheduled,
+                        EtlHook
+    config.rs           ETL task YAML schema (serde structs)
     native.rs           NValue accessor trait (no DOM)
     lazy.rs             expression compiler + evaluator
     plazy.rs            streaming per-record runner (pipelines / datasets)
     columnar.rs         typed columnar Parquet sink (+ Hive partitioning)
     store.rs            store URIs (file/memory/duckdb) + duckdb join/tables
     sonic.rs            sonic-rs implementation of NValue
-    scheduler.rs        actix scheduler kernel (queue, states, hooks, PyHook)
-    etl_sched.rs        ETL→scheduler expansion + run_scheduled, EtlHook
-  python/sonicetl/      pure-Python public API (__init__.py, scheduler.py)
-  examples/             demo + benchmark scripts (3 GB ETL, scheduler)
-  docs/scheduler.md     scheduler reference
-  docs/schema.md        official ETL YAML reference
-  schema/etl.schema.json  machine-readable JSON Schema
+  python/fina/      pure-Python public API (__init__.py, scheduler.py)
+  examples/             demo + benchmark scripts (ETL task, scheduler core)
+  docs/scheduler.md     scheduler core reference
+  docs/schema.md        ETL task YAML reference
+  schema/etl.schema.json  machine-readable JSON Schema (ETL task)
   BENCHMARK.md          benchmark methodology + results
 ```
 
@@ -332,21 +423,22 @@ sonicetl/
 cargo build --release          # build the Rust core (tests: cargo test)
 maturin develop --release      # build + install the Python extension
 python examples/demo.py        # smoke test
+python examples/scheduler/run.py   # scheduled ETL on the scheduler core
 python examples/bench_3gb.py --config examples/demo/pipelines.yml --input examples/demo/uni.json --out /tmp/pq
 ```
 
 `cargo test` runs the core unit tests (expression compiler / evaluator round
-trips). The Python API is verified end-to-end against the standalone CLI to
-produce byte-identical Parquet output.
+trips, scheduler lifecycle, ETL→scheduler end-to-end). The Python API is verified
+end-to-end against the standalone CLI to produce byte-identical Parquet output.
 
 ---
 
 ## Cross-platform support (manylinux / macOS / Windows)
 
 The extension is `abi3` (`abi3-py39`), so a single wheel built for a given
-platform works across Python ≥ 3.9 on that platform. Because the ETL whips up
-Parquet/Arrow (`arrow-*`, `parquet`) and a bundled duckdb, building from source
-needs a Rust toolchain (plus a C/C++ compiler for duckdb), but **published
+platform works across Python ≥ 3.9 on that platform. Because the ETL task whips
+up Parquet/Arrow (`arrow-*`, `parquet`) and a bundled duckdb, building from
+source needs a Rust toolchain (plus a C/C++ compiler for duckdb), but **published
 wheels are prebuilt so end users need nothing**.
 
 | platform        | wheels you publish                     | notes                                   |
@@ -383,7 +475,7 @@ one per install.
    in sync (they must match).
 
    ```bash
-   cd sonicetl
+   cd fina
    # e.g. bump both files to 0.2.0
    ```
 

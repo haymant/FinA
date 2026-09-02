@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Scheduler maximum-throughtput benchmark.
 
-Measures how many tasks the sonicetl scheduler can take to a terminal state in
+Measures how many tasks the fina scheduler can take to a terminal state in
 a fixed wall-clock window (default 60 s). Three submission strategies answer
 slightly different questions:
 
@@ -39,8 +39,8 @@ import sys
 import time
 from typing import Any, Dict, List, Optional
 
-import sonicetl
-from sonicetl.scheduler import Scheduler, TaskHook
+import fina
+from fina.scheduler import Scheduler, TaskHook
 
 
 class FinishOnStart(TaskHook):
@@ -290,7 +290,7 @@ def main() -> int:
             hook.set_scheduler(sched)
         counter = Counter(sched)
         if not args.quiet:
-            print(f"sonicetl scheduler benchmark  {json.dumps(header)}", flush=True)
+            print(f"fina scheduler benchmark  {json.dumps(header)}", flush=True)
 
         if args.mode == "bounded":
             info = run_bounded(sched, args, sw, counter)

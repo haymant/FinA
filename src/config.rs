@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
 
-// Official sonicetl ETL schema (see docs/schema.md).
+// Official FinA ETL schema (see docs/schema.md).
 //
 // The root document declares a list of *pipelines*, each of which declares any
 // number of named *sources* (inputs) and *datasets* (outputs). Datasets may be
