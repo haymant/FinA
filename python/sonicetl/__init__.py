@@ -12,6 +12,9 @@ Public surface
   (inputs) and *datasets* (outputs). Datasets may target any store — parquet
   file, in-memory duckdb table, or duckdb file — via a duckdb-style URI, and
   may LEFT JOIN against tables produced earlier in the same call.
+* ``run_pipelines_scheduled`` / ``Scheduler`` / ``TaskHook`` — the durable,
+  actix-based scheduler (see ``docs/scheduler.md``): stages of concurrent tasks,
+  fan-out partitions, retries, restore/pause/resume, all driven from Python.
 * ``PipelinesConfig`` / ``Pipeline`` / ``Source`` / ``Dataset`` / ``Field`` /
   ``UnwindRule`` / ``Join`` — thin builder helpers to construct the YAML schema
   programmatically.
@@ -34,6 +37,13 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Union
 
 from . import _core
 from ._core import __version__  # noqa: F401
+from ._core import expand_etl_config  # noqa: F401
+from .scheduler import (
+    Scheduler,
+    ScheduledRun,
+    TaskHook,
+    run_pipelines_scheduled,
+)
 
 __all__ = [
     "__version__",
@@ -48,9 +58,12 @@ __all__ = [
     "Field",
     "UnwindRule",
     "Join",
+    "ExecutionStage",
+    "GroupNode",
     "EtlResult",
     "ETL_SCHEMA",
-]
+    "expand_etl_config",
+] + ["Scheduler", "TaskHook", "ScheduledRun", "run_pipelines_scheduled"]
 
 
 # ---------------------------------------------------------------------------
@@ -241,6 +254,8 @@ class Dataset:
     fields: Sequence[Field] = field(default_factory=list)
     unwind_rules: Sequence[UnwindRule] = field(default_factory=list)
     join: Optional[Join] = None
+    filter: Optional[str] = None
+    row_root: Optional[Dict[str, str]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {"name": self.name, "type": self.type}
@@ -254,6 +269,10 @@ class Dataset:
             d["unwind_rules"] = [r.to_dict() for r in self.unwind_rules]
         if self.join is not None:
             d["join"] = self.join.to_dict()
+        if self.filter is not None:
+            d["filter"] = self.filter
+        if self.row_root is not None:
+            d["row_root"] = dict(self.row_root)
         return d
 
 
@@ -277,6 +296,50 @@ class Pipeline:
 
 
 @dataclass
+class GroupNode:
+    """A member of an execution stage group.
+
+    Either a bare pipeline name, or a fan-out node
+    ``GroupNode(pipeline=..., partition="partition(src.field, N)", priority=...)``
+    that splits the source's record universe into N partitions — one scheduler
+    task per non-empty partition (fewer than N tasks when the universe is
+    smaller). Each fan-out task filters ``$.<field> IN $task.ctx.units`` and its
+    output URI may use ``{task}`` / ``{index}`` / ``{of}`` placeholders.
+    """
+
+    pipeline: Optional[str] = None
+    partition: Optional[str] = None
+    priority: Optional[int] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        if self.pipeline is None:
+            raise ValueError("GroupNode needs a pipeline name")
+        d: Dict[str, Any] = {"pipeline": self.pipeline}
+        if self.partition:
+            d["partition"] = self.partition
+        if self.priority is not None:
+            d["priority"] = self.priority
+        return d
+
+
+@dataclass
+class ExecutionStage:
+    """A scheduler stage: a ``group`` run concurrently; stages run serially."""
+
+    group: Sequence[Union[str, GroupNode]] = field(default_factory=list)
+    mode: str = "parallel"
+
+    def to_dict(self) -> Dict[str, Any]:
+        g: List[Any] = []
+        for node in self.group:
+            g.append(node.to_dict() if isinstance(node, GroupNode) else node)
+        d: Dict[str, Any] = {"group": g}
+        if self.mode != "parallel":
+            d["mode"] = self.mode
+        return d
+
+
+@dataclass
 class PipelinesConfig:
     """Programmatic builder for the official ETL YAML schema.
 
@@ -288,12 +351,27 @@ class PipelinesConfig:
                                        fields=[Field("name", "$._id")])]),
         ])
         result = sonicetl.run_pipelines(cfg)
+
+    An optional ``execution`` block turns the same pipelines into a scheduled
+    run (see ``docs/scheduler.md`` and ``run_pipelines_scheduled``)::
+
+        cfg = PipelinesConfig([...], execution=[
+            ExecutionStage(["mktDataETL"]),
+            ExecutionStage([GroupNode("instrumentsETL")]),
+            ExecutionStage([GroupNode(pipeline="fanout",
+                                      partition="partition(instruments.name, 10)")]),
+        ])
+        result = sonicetl.run_pipelines_scheduled(cfg.to_yaml(), workers=10)
     """
 
     pipelines: Sequence[Pipeline] = field(default_factory=list)
+    execution: Sequence[ExecutionStage] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
-        return {"pipelines": [p.to_dict() for p in self.pipelines]}
+        d: Dict[str, Any] = {"pipelines": [p.to_dict() for p in self.pipelines]}
+        if self.execution:
+            d["execution"] = [e.to_dict() for e in self.execution]
+        return d
 
     def to_yaml(self) -> str:
         import yaml
@@ -409,6 +487,17 @@ pipelines:
           left_key: string                   # e.g. "$.u" (this dataset's key)
           right_key: string                  # target table's key column
           columns: [string]                  # right columns exposed under alias
+        filter: string?                      # optional per-row filter (e.g.
+                                             #   "$.name IN $task.ctx.units")
+        row_root: {string: string}?          # optional: assemble a NEW JSON root
+                                             #   per output row from raw record
+                                             #   ("$"), unwound element (alias),
+                                             #   joined row (join.alias); fields
+                                             #   then address children, e.g.
+                                             #   "$.instrument.id", cast($.market.spot)
+execution:                                   # optional scheduler plan
+  - group: [string | {pipeline, partition, priority}]?
+    mode: "parallel" | "serial"              # default parallel
 """  # noqa: E501
 
 ETL_SCHEMA = DOC

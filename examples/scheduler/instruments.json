@@ -1,0 +1,67 @@
+[
+  {
+    "id": "OPT001",
+    "name": "AAPL Call 220",
+    "type": "vanilla",
+    "currency": "USD",
+    "legs": [
+      {"leg": "call", "strike": 220.0, "underlying": "AAPL", "weight": 1.0},
+      {"leg": "put",  "strike": 160.0, "underlying": "AAPL", "weight": -1.0}
+    ]
+  },
+  {
+    "id": "OPT002",
+    "name": "MSFT Call 450",
+    "type": "vanilla",
+    "currency": "USD",
+    "legs": [
+      {"leg": "call", "strike": 450.0, "underlying": "MSFT", "weight": 1.0}
+    ]
+  },
+  {
+    "id": "OPT003",
+    "name": "NVDA Digital 130",
+    "type": "digital",
+    "currency": "USD",
+    "legs": [
+      {"leg": "digital", "strike": 130.0, "underlying": "NVDA", "weight": 1.0}
+    ]
+  },
+  {
+    "id": "OPT004",
+    "name": "GOOG Spread 170/190",
+    "type": "spread",
+    "currency": "USD",
+    "legs": [
+      {"leg": "call", "strike": 170.0, "underlying": "GOOG", "weight": 1.0},
+      {"leg": "call", "strike": 190.0, "underlying": "GOOG", "weight": -1.0}
+    ]
+  },
+  {
+    "id": "OPT005",
+    "name": "TSLA Call 260",
+    "type": "vanilla",
+    "currency": "USD",
+    "legs": [
+      {"leg": "call", "strike": 260.0, "underlying": "TSLA", "weight": 1.0}
+    ]
+  },
+  {
+    "id": "FX001",
+    "name": "EURUSD Accrual",
+    "type": "accrual",
+    "currency": "EUR",
+    "legs": [
+      {"leg": "fx", "strike": 1.085, "underlying": "EUR", "weight": 1.0}
+    ]
+  },
+  {
+    "id": "FX002",
+    "name": "USDHKD Knockout",
+    "type": "knockout",
+    "currency": "USD",
+    "legs": [
+      {"leg": "fx", "strike": 7.8, "underlying": "HKD", "weight": 1.0}
+    ]
+  }
+]

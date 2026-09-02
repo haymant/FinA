@@ -5,6 +5,7 @@
 use crate::columnar::{ColKind, Column};
 use duckdb::Connection;
 use duckdb::types::Value as DbValue;
+use std::sync::Mutex;
 
 /// A parsed store URI.
 #[derive(Debug, Clone)]
@@ -45,6 +46,40 @@ impl Uri {
             return Uri::DuckdbFile { path, table };
         }
         Uri::File { path: s.to_string() }
+    }
+}
+
+/// A scheduler-wide store: one `SharedDb` (hence one in-memory duckdb backend)
+/// shared by every ETL task of a scheduled run. Tasks execute on separate
+/// threads (see `EtlHook`), so access is serialized behind a mutex — `memory://`
+/// tables produced by an earlier stage/task are visible to later ones.
+pub struct SharedStore {
+    inner: Mutex<Option<SharedDb>>,
+}
+
+impl SharedStore {
+    pub fn new() -> Self {
+        SharedStore { inner: Mutex::new(None) }
+    }
+
+    /// Lend a connected store to `f`. The in-memory duckdb backend is lazily
+    /// created on first use, so a scheduled run that never touches a store pays
+    /// nothing.
+    pub fn with<R>(&self, f: impl FnOnce(&mut SharedDb) -> Result<R, String>) -> Result<R, String> {
+        let mut guard = self
+            .inner
+            .lock()
+            .map_err(|_| "shared store poisoned".to_string())?;
+        if guard.is_none() {
+            *guard = Some(SharedDb::new()?);
+        }
+        f(guard.as_mut().expect("lazily initialized"))
+    }
+}
+
+impl Default for SharedStore {
+    fn default() -> Self {
+        SharedStore::new()
     }
 }
 
@@ -179,7 +214,7 @@ impl SharedDb {
         right_uri: &Uri,
         right_key: &str,
         right_cols: &[String],
-        right_kinds: &[ColKind],
+        _right_kinds: &[ColKind],
         order_col: &str,
     ) -> Result<Vec<Vec<crate::columnar::Cell>>, String> {
         let (conn, right_table) = self.resolve(right_uri)?;
@@ -200,8 +235,8 @@ impl SharedDb {
         let mut result: Vec<Vec<crate::columnar::Cell>> = Vec::new();
         while let Some(row) = rows.next().map_err(|e| format!("row: {e}"))? {
             let mut cells: Vec<crate::columnar::Cell> = Vec::with_capacity(right_cols.len());
-            for (i, kind) in right_kinds.iter().enumerate() {
-                cells.push(get_cell(&row, i, *kind)?);
+            for i in 0..right_cols.len() {
+                cells.push(get_cell_value_ref(&row, i)?);
             }
             result.push(cells);
         }
@@ -216,13 +251,32 @@ impl SharedDb {
     }
 }
 
-fn get_cell(row: &duckdb::Row<'_>, idx: usize, kind: ColKind) -> Result<crate::columnar::Cell, String> {
+/// Read a join column cell by its *actual* duckdb type (instead of trusting a
+/// config-derived kind). `row_root` / join datasets may reference right-side
+/// columns through `$..` expressions, so the config carries no kind hint: the
+/// value decides how it is decoded and JSON-encoded.
+fn get_cell_value_ref(row: &duckdb::Row<'_>, idx: usize) -> Result<crate::columnar::Cell, String> {
     use crate::columnar::Cell;
-    Ok(match kind {
-        ColKind::Str => row.get::<_, Option<String>>(idx).map_err(|e| format!("str: {e}"))?.map_or(Cell::Null, Cell::Str),
-        ColKind::F64 => row.get::<_, Option<f64>>(idx).map_err(|e| format!("f64: {e}"))?.map_or(Cell::Null, Cell::F64),
-        ColKind::I64 => row.get::<_, Option<i64>>(idx).map_err(|e| format!("i64: {e}"))?.map_or(Cell::Null, Cell::I64),
-        ColKind::Bool => row.get::<_, Option<bool>>(idx).map_err(|e| format!("bool: {e}"))?.map_or(Cell::Null, Cell::Bool),
+    use duckdb::types::ValueRef;
+    let v = row.get_ref(idx).map_err(|e| format!("read join column {idx}: {e}"))?;
+    Ok(match v {
+        ValueRef::Null => Cell::Null,
+        ValueRef::Boolean(b) => Cell::Bool(b),
+        ValueRef::TinyInt(i) => Cell::I64(i as i64),
+        ValueRef::SmallInt(i) => Cell::I64(i as i64),
+        ValueRef::Int(i) => Cell::I64(i as i64),
+        ValueRef::BigInt(i) => Cell::I64(i),
+        ValueRef::HugeInt(i) => Cell::I64(i as i64),
+        ValueRef::UTinyInt(i) => Cell::I64(i as i64),
+        ValueRef::USmallInt(i) => Cell::I64(i as i64),
+        ValueRef::UInt(i) => Cell::I64(i as i64),
+        ValueRef::UBigInt(i) => Cell::I64(i as i64),
+        ValueRef::Float(f) => Cell::F64(f as f64),
+        ValueRef::Double(f) => Cell::F64(f),
+        ValueRef::Decimal(d) => Cell::F64(d.to_string().parse::<f64>().unwrap_or(0.0)),
+        ValueRef::Text(s) => Cell::Str(String::from_utf8_lossy(s).into_owned()),
+        ValueRef::Blob(b) => Cell::Str(format!("<blob:{} bytes>", b.len())),
+        _ => Cell::Str(format!("<{v:?}>")),
     })
 }
 

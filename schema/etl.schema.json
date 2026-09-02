@@ -10,9 +10,42 @@
       "type": "array",
       "minItems": 1,
       "items": { "$ref": "#/$defs/pipeline" }
+    },
+    "execution": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/execution_stage" },
+      "description": "Optional scheduler plan (docs/scheduler.md). A list of stages run serially; each stage is a group of nodes run concurrently. Absent, every pipeline runs serially in declaration order."
     }
   },
   "$defs": {
+    "execution_stage": {
+      "type": "object",
+      "properties": {
+        "group": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string", "description": "Pipeline name -> one task." },
+              { "$ref": "#/$defs/group_node" }
+            ]
+          },
+          "description": "Members of this stage's parallel group."
+        },
+        "mode": { "type": "string", "enum": ["parallel", "serial"], "default": "parallel" }
+      }
+    },
+    "group_node": {
+      "type": "object",
+      "required": ["pipeline"],
+      "properties": {
+        "pipeline": { "type": "string", "description": "Pipeline name to fan out / run." },
+        "partition": {
+          "type": "string",
+          "description": "partition(source.field, N): split the source record universe into N partitions, one scheduler task per non-empty partition. Each task filters $.<field> IN $task.ctx.units."
+        },
+        "priority": { "type": "integer", "minimum": 0 }
+      }
+    },
     "pipeline": {
       "type": "object",
       "required": ["datasets"],
@@ -74,6 +107,15 @@
         "source": { "type": "string", "description": "Default source (a Source.name); $ resolves to it." },
         "to": { "$ref": "#/$defs/output" },
         "join": { "$ref": "#/$defs/join" },
+        "filter": {
+          "type": "string",
+          "description": "Optional boolean expression evaluated per output row; failing rows are dropped for this dataset (e.g. \"$.name IN $task.ctx.units\")."
+        },
+        "row_root": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Assemble a new JSON root per output row from raw record (\"$\"), an unwind-rule alias, or the join alias; field expressions then address children (e.g. $.instrument.id, cast($.market.spot as double))."
+        },
         "fields": {
           "type": "array",
           "items": {

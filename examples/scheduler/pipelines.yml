@@ -1,0 +1,128 @@
+# Scheduled ETL example (run through the scheduler; see docs/scheduler.md).
+#
+#   stage 1  mktDataETL          market data: one JSON doc per underlying symbol,
+#                                materialized to an in-memory duckdb table.
+#   stage 2  instrumentsETL      unwind the instrument legs array, LEFT JOIN each
+#                                leg's underlying against the stage-1 quotes,
+#                                write one row per (instrument, leg) to parquet.
+#   stage 3  instrumentsFanout   same unwind+join, fanned out by instrument name
+#                                into 10 partitions (one scheduler task each; the
+#                                actual task count follows the symbol universe).
+#                                Every output row assembles a NEW JSON root that
+#                                nests the raw instrument document and the joined
+#                                market document as children, then extracts typed
+#                                columns -> worker-unique parquet targets.
+# Output rows (legs) exceed input rows (instruments).
+pipelines:
+  # ---------------------------------------------------------------------
+  # (a) mktDataETL: extract per-symbol quote JSON, materialize to duckdb.
+  # ---------------------------------------------------------------------
+  - name: mktDataETL
+    sources:
+      - name: market
+        uri: file://market.json
+        format: json
+    datasets:
+      - name: market
+        type: raw
+        source: market
+        to:
+          uri: memory://market
+        fields:
+          - {name: symbol, expression: "$.symbol"}
+          - {name: bid, expression: "cast($.bid as double)"}
+          - {name: ask, expression: "cast($.ask as double)"}
+          - {name: spot, expression: "cast($.spot as double)"}
+          - {name: volume, expression: "cast($.volume as double)"}
+          - {name: exchange, expression: "$.exchange"}
+
+  # ---------------------------------------------------------------------
+  # (b) instrumentsETL: unwind legs, join market quotes, write parquet.
+  # ---------------------------------------------------------------------
+  - name: instrumentsETL
+    sources:
+      - name: instruments
+        uri: file://instruments.json
+        format: json
+    datasets:
+      - name: options
+        type: unwound
+        source: instruments
+        to:
+          uri: file://out/instruments_legs_market.parquet
+          format: parquet
+        unwind_rules:
+          - name: leg
+            condition: "$.legs[0]"
+            unwind_path: "$.legs"
+            output_alias: leg
+        join:
+          alias: mkt
+          target: memory://market
+          left_key: "$.leg.underlying"
+          right_key: "symbol"
+          columns: [bid, ask, spot, exchange]
+        fields:
+          - {name: instrument_id, expression: "$.id"}
+          - {name: instrument_name, expression: "$.name"}
+          - {name: leg_type, expression: "$.leg.leg"}
+          - {name: leg_strike, expression: "cast($.leg.strike as double)"}
+          - {name: leg_weight, expression: "cast($.leg.weight as double)"}
+          - {name: underlying, expression: "$.leg.underlying"}
+          - {name: bid, expression: "cast(mkt.bid as double)"}
+          - {name: ask, expression: "cast(mkt.ask as double)"}
+          - {name: spot_mid, expression: "cast(mkt.spot as double)"}
+          - {name: exchange, expression: "$.exchange"}
+
+  # ---------------------------------------------------------------------
+  # (c)+(d) instrumentsFanout: partition(instruments.name, 10). One task per
+  # partition filters on `$.name IN $task.ctx.units`; each output row builds a
+  # new JSON root `{instrument, leg, market}` and extracts typed columns.
+  # ---------------------------------------------------------------------
+  - name: instrumentsFanout
+    sources:
+      - name: instruments
+        uri: file://instruments.json
+        format: json
+    datasets:
+      - name: fanout
+        type: unwound
+        source: instruments
+        to:
+          uri: file://out/fanout/{task}.parquet
+          format: parquet
+        unwind_rules:
+          - name: leg
+            condition: "$.legs[0]"
+            unwind_path: "$.legs"
+            output_alias: leg
+        join:
+          alias: mkt
+          target: memory://market
+          left_key: "$.leg.underlying"
+          right_key: "symbol"
+          columns: [bid, ask, spot, exchange]
+        row_root:
+          instrument: "$"
+          leg: leg
+          market: mkt
+        fields:
+          - {name: instrument_id, expression: "$.instrument.id"}
+          - {name: instrument_name, expression: "$.instrument.name"}
+          - {name: instrument_type, expression: "$.instrument.type"}
+          - {name: leg_type, expression: "$.leg.leg"}
+          - {name: leg_strike, expression: "cast($.leg.strike as double)"}
+          - {name: leg_weight, expression: "cast($.leg.weight as double)"}
+          - {name: underlying, expression: "$.leg.underlying"}
+          - {name: bid, expression: "cast($.market.bid as double)"}
+          - {name: ask, expression: "cast($.market.ask as double)"}
+          - {name: spot_mid, expression: "cast($.market.spot as double)"}
+          - {name: exchange, expression: "$.market.exchange"}
+
+# Scheduling: two serial stages, then the fan-out stage over 10 workers.
+execution:
+  - group: [mktDataETL]
+  - group: [instrumentsETL]
+  - group:
+      - pipeline: instrumentsFanout
+        partition: "partition(instruments.name, 10)"

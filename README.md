@@ -267,83 +267,35 @@ sonicetl.run_pipelines(cfg)     # or pass the dict / YAML / path
 
 - [`examples/demo.py`](examples/demo.py) — codecs + programmatic config +
   whole-pipelines run with output inspection.
+- [`examples/scheduler/run.py`](examples/scheduler/run.py) — the scheduled ETL
+  example (market → `memory://`, instruments unwind+join, 10-way fan-out with
+  per-worker parquet) through `run_pipelines_scheduled`.
 - [`examples/bench_3gb.py`](examples/bench_3gb.py) — benchmark a whole ETL
   (defaults to the sample corpus in `examples/demo/`).
+- [`examples/scheduler/bench.py`](examples/scheduler/bench.py) — benchmark the
+  scheduler's maximum task throughput over a 60-second window.
 
 ```bash
 cd sonicetl
 python examples/demo.py
+python examples/scheduler/run.py
 python examples/bench_3gb.py --config examples/demo/pipelines.yml --input examples/demo/uni.json --out /tmp/pq
+python examples/scheduler/bench.py --duration 60
 ```
 
 ---
 
-## Benchmark (3 GB / 150k records, single-core)
+## Benchmarking
 
-These figures come from a 3 GB stress corpus (150k records, the same ETL
-expressions as [`data/pipelines.yml`](../data/pipelines.yml), scaled up). The
-big input is kept out of the repo by size; reproduce via the `rust_simdetl`
-harness or a large generated `uni.json`. `disk read` (~2 s) is excluded from
-the ETL total because it is identical for every path.
+Benchmark methodology, known bottlenecks and latest numbers live in
+[`BENCHMARK.md`](BENCHMARK.md):
 
-### Whole ETL — `sonicetl.run_pipelines` (native sonic-rs, streaming, no DOM)
-
-| dataset        | time     |
-|----------------|----------|
-| instrument_raw |  9,077 ms |
-| instrument_master | 3,916 ms |
-| instrument_unwound | 3,172 ms |
-| **ETL total (sum of per-dataset)** | **16,165 ms** |
-| wall clock (incl. read + allocator warm-up) | 19,067 ms |
-| process peak RSS | ~12.7 GB |
-| rows | 150k raw / 150k master / 420,262 unwound |
-
-> Datasets that share a source are evaluated in **one streaming pass** (each
-> record is parsed once and evaluated against every dataset in the group); a
-> dataset with its own source or a join gets its own pass. The shared-scan time
-> is split across the grouped datasets in the timing report.
->
-> The engine streams records one at a time and never builds a `serde_json`/DOM
-> representation, which is what keeps memory low for a 3 GB input and
-> avoids the multi-GB DOM that a naive whole-file parse would allocate.
-> (`loads`/`dumps`, when called explicitly, do materialize a DOM for Python
-> interop; the ETL path itself avoids them.)
->
-> Notes: single-core; 12-core box. The original single-dataset-pass runner
-> measured 10,332 ms ETL / 15,604 ms wall / ~6.7 GB RSS; the grouped runner is
-> the price of per-dataset sources and joins, and RSS is higher because output
-> columns are materialized in full before write (the old runner streamed parquet
-> row-groups and returned freed pages via the mimalloc allocator, which was
-> dropped to keep the wheel importable on stock glibc).
-
-### Known performance regression (TODO)
-
-The current engine is slower and uses more memory than the original
-single-dataset-pass runner (10,332 ms ETL / ~6.7 GB RSS on the 3 GB corpus
-above). This is a deliberate trade-off from the schema generalization, but the
-gap should be closed. Concrete levers, in expected order of impact:
-
-1. **Streaming writes during the scan** — `scan_group` currently accumulates
-   full output columns for every dataset and writes them only at the end. For
-   non-partitioned `file://` targets (the common case) open a
-   [`ParquetSink`](src/columnar.rs) per dataset and flush row-groups every
-   `CHUNK` rows, clearing the columns. This alone should bring RSS back near the
-   old ~6.7 GB. Partitioned / `memory://` / `duckdb://` / joined targets still
-   need full materialization (partition layout / table insert / join temp table).
-2. **A low-fragmentation allocator without initial-exec TLS** — mimalloc was
-   removed because its `#[thread_local]` produced `R_X86_64_TPOFF64` relocations,
-   forcing glibc to statically allocate the module's ~8.6 KB TLS block (mostly
-   duckdb's `pg_parser_state`) at `dlopen`, which overflowed the static-TLS
-   surplus on stock glibc ("cannot allocate memory in static TLS block"). A
-   wheel must have zero IE TLS relocs to import cleanly. Reintroducing an
-   allocator (mimalloc or jemalloc) therefore requires building it with a
-   general-dynamic TLS model (e.g. nightly `-Ztls-model=global-dynamic`), or
-   shrinking the module's TLS block (excluding duckdb's libpg_query).
-3. **One pass across multiple sources** — datasets reading different sources
-   still get one pass each; a multi-source single pass would reuse the parse
-   across sources that share the same underlying bytes.
-
-Re-benchmark with `examples/bench_3gb.py` after any of these.
+- **ETL engine** — 3 GB / 150k-record single-core run (per-dataset timing,
+  RSS, the known visibility-regression notes);
+- **Scheduler** — maximum task throughput in one minute
+  (`examples/scheduler/bench.py`, three modes) plus the native kernel
+  reference run (`cargo test --release -- --ignored --nocapture
+  kernel_throughput`).
 
 ---
 
@@ -352,10 +304,11 @@ Re-benchmark with `examples/bench_3gb.py` after any of these.
 ```
 sonicetl/
   Cargo.toml            Rust crate (cdylib, PyO3) — deps: pyo3, sonic-rs,
-                        parquet/arrow (write only), duckdb (bundled), serde_yaml
+                        parquet/arrow (write only), duckdb (bundled), serde_yaml,
+                        actix/actix-rt, tokio
   pyproject.toml        maturin build, package "sonicetl"
   src/
-    lib.rs              PyO3 bindings: run_pipelines, loads, dumps
+    lib.rs              PyO3 bindings: run_pipelines, loads, dumps, scheduler_*
     config.rs           official ETL YAML schema (serde structs)
     native.rs           NValue accessor trait (no DOM)
     lazy.rs             expression compiler + evaluator
@@ -363,10 +316,14 @@ sonicetl/
     columnar.rs         typed columnar Parquet sink (+ Hive partitioning)
     store.rs            store URIs (file/memory/duckdb) + duckdb join/tables
     sonic.rs            sonic-rs implementation of NValue
-  python/sonicetl/      pure-Python public API (__init__.py)
-  examples/             demo + 3 GB benchmark scripts
+    scheduler.rs        actix scheduler kernel (queue, states, hooks, PyHook)
+    etl_sched.rs        ETL→scheduler expansion + run_scheduled, EtlHook
+  python/sonicetl/      pure-Python public API (__init__.py, scheduler.py)
+  examples/             demo + benchmark scripts (3 GB ETL, scheduler)
+  docs/scheduler.md     scheduler reference
   docs/schema.md        official ETL YAML reference
   schema/etl.schema.json  machine-readable JSON Schema
+  BENCHMARK.md          benchmark methodology + results
 ```
 
 ## Development

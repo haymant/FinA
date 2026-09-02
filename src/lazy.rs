@@ -4,12 +4,14 @@ use crate::native::{NKind, NValue};
 /// The root against which an expression is evaluated, plus the original record
 /// text (for zero-copy `to_json_string($)`). For unwound rows an "element" is
 /// overlaid as the `alias` key (e.g. `$.symbol`), while every other path
-/// resolves against the parent record.
+/// resolves against the parent record. An optional per-task context (JSON, e.g.
+/// an ETL worker's partitioned instrument list) is exposed through `$task.*`.
 pub struct Ctx<'a, V: NValue> {
     pub base: &'a V,
     pub raw: &'a str,
     pub elem: Option<&'a V>,
     pub alias: Option<&'a str>,
+    pub task: Option<&'a V>,
 }
 
 impl<'a, V: NValue> Clone for Ctx<'a, V> {
@@ -20,11 +22,17 @@ impl<'a, V: NValue> Clone for Ctx<'a, V> {
 impl<'a, V: NValue> Copy for Ctx<'a, V> {}
 
 impl<'a, V: NValue> Ctx<'a, V> {
+    #[allow(dead_code)]
     pub fn report(root: &'a V, raw: &'a str) -> Self {
-        Ctx { base: root, raw, elem: None, alias: None }
+        Ctx { base: root, raw, elem: None, alias: None, task: None }
     }
+    /// Context with a task payload exposed under `$task.*`.
+    pub fn report_task(root: &'a V, raw: &'a str, task: Option<&'a V>) -> Self {
+        Ctx { base: root, raw, elem: None, alias: None, task }
+    }
+    #[allow(dead_code)]
     pub fn unwound(root: &'a V, raw: &'a str, elem: &'a V, alias: &'a str) -> Self {
-        Ctx { base: root, raw, elem: Some(elem), alias: Some(alias) }
+        Ctx { base: root, raw, elem: Some(elem), alias: Some(alias), task: None }
     }
 }
 
@@ -114,6 +122,9 @@ impl LazyVal {
 #[derive(Debug)]
 pub enum Node {
     Root,
+    /// `$task.<path>` — resolved against the per-task context (`Ctx::task`), not
+    /// the record (e.g. `$task.ctx.units`).
+    Task(Vec<Seg>),
     Path(Vec<Seg>),
     Lit(LazyLit),
     Coalesce(Vec<Node>),
@@ -122,6 +133,8 @@ pub enum Node {
     /// `cartesian_product(left, right[, 'l != r'])` — cross-product of the two
     /// (array) operands, concatenating each pair; optional filter over `l`/`r`.
     CartProd { left: Box<Node>, right: Box<Node>, cond: Option<String> },
+    /// `left IN right` — membership of a scalar in an array operand.
+    In { left: Box<Node>, right: Box<Node> },
 }
 
 #[derive(Debug)]
@@ -147,13 +160,26 @@ pub fn compile(expr: &str) -> Node {
         chars: expr.trim().chars().collect(),
         pos: 0,
     };
-    c.p_expr().unwrap_or(Node::Lit(LazyLit::Null))
+    c.p_in_clause().unwrap_or(Node::Lit(LazyLit::Null))
 }
 
 /// Evaluates a compiled `Node` against a native context, lazily (no DOM).
 pub fn eval_node<V: NValue>(n: &Node, ctx: &Ctx<'_, V>) -> LazyVal {
     match n {
         Node::Root => LazyVal::Raw(ctx.raw.to_string()),
+        Node::Task(segs) => {
+            if segs.iter().any(|s| matches!(s, Seg::All)) {
+                match collect_task(ctx, segs).into_iter().next() {
+                    Some(v) => to_lazy(v, ctx),
+                    None => LazyVal::Null,
+                }
+            } else {
+                match resolve_task_single(ctx, segs) {
+                    Some(v) => to_lazy(v, ctx),
+                    None => LazyVal::Null,
+                }
+            }
+        }
         Node::Path(_) => match resolve_node(n, ctx) {
             Some(v) => to_lazy(v, ctx),
             None => LazyVal::Null,
@@ -192,14 +218,30 @@ pub fn eval_node<V: NValue>(n: &Node, ctx: &Ctx<'_, V>) -> LazyVal {
             }
             LazyVal::Str(json_array(&pairs))
         }
+        Node::In { left, right } => {
+            let needle = eval_node(left, ctx);
+            if needle.is_null() {
+                return LazyVal::Bool(false);
+            }
+            let needle = lazy_scalar_string(&needle).unwrap_or_default();
+            let haystack = eval_vec(right, ctx);
+            LazyVal::Bool(haystack.iter().any(|h| *h == needle))
+        }
     }
 }
 
-/// Resolves a `Path`/`Root` node to a single native reference (first match for
-/// wildcard paths). Non-wildcard paths use a no-allocation walk.
+/// Resolves a `Path`/`Root`/`Task` node to a single native reference (first
+/// match for wildcard paths). Non-wildcard paths use a no-allocation walk.
 fn resolve_node<'v, V: NValue>(n: &Node, ctx: &Ctx<'v, V>) -> Option<&'v V> {
     match n {
         Node::Root => Some(ctx.base),
+        Node::Task(segs) => {
+            if segs.iter().any(|s| matches!(s, Seg::All)) {
+                collect_task(ctx, segs).into_iter().next()
+            } else {
+                resolve_task_single(ctx, segs)
+            }
+        }
         Node::Path(segs) => {
             if segs.iter().any(|s| matches!(s, Seg::All)) {
                 collect_path(ctx, segs).into_iter().next()
@@ -209,6 +251,57 @@ fn resolve_node<'v, V: NValue>(n: &Node, ctx: &Ctx<'v, V>) -> Option<&'v V> {
         }
         _ => None,
     }
+}
+
+/// Walks a wildcard-free `$task.*` path (no allocation).
+fn resolve_task_single<'v, V: NValue>(ctx: &Ctx<'v, V>, segs: &[Seg]) -> Option<&'v V> {
+    let mut cur: &'v V = ctx.task?;
+    for seg in segs {
+        cur = match seg {
+            Seg::Key(k) => cur.get(k)?,
+            Seg::Idx(i) => cur.get_idx(*i)?,
+            Seg::All => return None,
+        };
+    }
+    Some(cur)
+}
+
+/// Walks a `$task.*` path, fanning out on `[]` wildcards.
+fn collect_task<'v, V: NValue>(ctx: &Ctx<'v, V>, segs: &[Seg]) -> Vec<&'v V> {
+    let Some(mut nodes) = ctx.task.map(|t| vec![t]) else {
+        return Vec::new();
+    };
+    for seg in segs {
+        let mut next: Vec<&'v V> = Vec::new();
+        for cur in nodes.iter().copied() {
+            match seg {
+                Seg::All => {
+                    if let Some(len) = cur.array_len() {
+                        for i in 0..len {
+                            if let Some(e) = cur.get_idx(i) {
+                                next.push(e);
+                            }
+                        }
+                    }
+                }
+                Seg::Idx(i) => {
+                    if let Some(e) = cur.get_idx(*i) {
+                        next.push(e);
+                    }
+                }
+                Seg::Key(k) => {
+                    if let Some(e) = cur.get(k) {
+                        next.push(e);
+                    }
+                }
+            }
+        }
+        nodes = next;
+        if nodes.is_empty() {
+            break;
+        }
+    }
+    nodes
 }
 
 /// Walks a wildcard-free path (no allocation).
@@ -295,6 +388,15 @@ fn eval_vec<V: NValue>(n: &Node, ctx: &Ctx<'_, V>) -> Vec<String> {
     };
     match n {
         Node::Root => add(ctx.base),
+        Node::Task(segs) => {
+            if segs.iter().any(|s| matches!(s, Seg::All)) {
+                for nd in collect_task(ctx, segs) {
+                    add(nd);
+                }
+            } else if let Some(nd) = resolve_task_single(ctx, segs) {
+                add(nd);
+            }
+        }
         Node::Path(segs) => {
             if segs.iter().any(|s| matches!(s, Seg::All)) {
                 for nd in collect_path(ctx, segs) {
@@ -541,37 +643,19 @@ impl Compiler {
             None => Ok(Node::Lit(LazyLit::Null)),
             Some('$') => {
                 self.pos += 1;
-                let mut segs = Vec::new();
-                loop {
-                    self.skip_ws();
-                    match self.peek() {
-                        Some('.') => {
-                            self.pos += 1;
-                            let seg = self.seg_ident();
-                            if !seg.is_empty() {
-                                segs.push(Seg::Key(seg));
-                            }
-                        }
-                        Some('[') => {
-                            self.pos += 1;
-                            let mut num = String::new();
-                            while let Some(c) = self.peek() {
-                                if c == ']' {
-                                    self.pos += 1;
-                                    break;
-                                }
-                                num.push(c);
-                                self.pos += 1;
-                            }
-                            if num.trim().is_empty() {
-                                segs.push(Seg::All);
-                            } else if let Ok(i) = num.trim().parse::<usize>() {
-                                segs.push(Seg::Idx(i));
-                            }
-                        }
-                        _ => break,
+                // `$task.<path>` resolves against the per-task context, not the
+                // record. `$ident` (a bare identifier that is not a path) keeps
+                // the historic meaning: the whole record.
+                if self.peek().map(|c| c.is_alphabetic() || c == '_').unwrap_or(false) {
+                    let id = self.ident();
+                    if id == "task" {
+                        let mut segs = Vec::new();
+                        self.path_segments(&mut segs);
+                        return Ok(Node::Task(segs));
                     }
                 }
+                let mut segs = Vec::new();
+                self.path_segments(&mut segs);
                 if segs.is_empty() {
                     Ok(Node::Root)
                 } else {
@@ -627,6 +711,73 @@ impl Compiler {
                     Ok(Node::Lit(LazyLit::I64(s.parse().unwrap_or(0))))
                 }
             }
+        }
+    }
+
+    /// Parses trailing `.key`, `[idx]` and `[]` segments into `segs`.
+    fn path_segments(&mut self, segs: &mut Vec<Seg>) {
+        loop {
+            self.skip_ws();
+            match self.peek() {
+                Some('.') => {
+                    self.pos += 1;
+                    let seg = self.seg_ident();
+                    if !seg.is_empty() {
+                        segs.push(Seg::Key(seg));
+                    }
+                }
+                Some('[') => {
+                    self.pos += 1;
+                    let mut num = String::new();
+                    while let Some(c) = self.peek() {
+                        if c == ']' {
+                            self.pos += 1;
+                            break;
+                        }
+                        num.push(c);
+                        self.pos += 1;
+                    }
+                    if num.trim().is_empty() {
+                        segs.push(Seg::All);
+                    } else if let Ok(i) = num.trim().parse::<usize>() {
+                        segs.push(Seg::Idx(i));
+                    }
+                }
+                _ => break,
+            }
+        }
+    }
+
+    /// Top-level `left IN right` (case-insensitive `in`), right side being any
+    /// operand (usually an array path such as `$task.ctx.units`).
+    fn p_in_clause(&mut self) -> Result<Node, ()> {
+        let left = self.p_expr()?;
+        self.skip_ws();
+        if !self.eat_in() {
+            return Ok(left);
+        }
+        let right = self.p_expr()?;
+        Ok(Node::In { left: Box::new(left), right: Box::new(right) })
+    }
+
+    fn eat_in(&mut self) -> bool {
+        self.skip_ws();
+        let i = self.pos;
+        let rem: Vec<char> = self.chars[i..].to_vec();
+        if rem.len() < 2 {
+            return false;
+        }
+        let lo = |c: char| c.to_ascii_lowercase();
+        if lo(rem[0]) == 'i' && lo(rem[1]) == 'n' {
+            if let Some(next) = rem.get(2) {
+                if next.is_alphanumeric() || *next == '_' {
+                    return false; // part of a longer identifier
+                }
+            }
+            self.pos += 2;
+            true
+        } else {
+            false
         }
     }
 

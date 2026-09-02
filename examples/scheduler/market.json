@@ -1,0 +1,10 @@
+[
+  {"symbol": "AAPL", "exchange": "NASDAQ", "bid": 164.05, "ask": 164.35, "spot": 164.2, "volume": 55412000},
+  {"symbol": "MSFT", "exchange": "NASDAQ", "bid": 430.1, "ask": 430.7, "spot": 430.4, "volume": 22004000},
+  {"symbol": "NVDA", "exchange": "NASDAQ", "bid": 128.3, "ask": 128.9, "spot": 128.6, "volume": 31055000},
+  {"symbol": "GOOG", "exchange": "NASDAQ", "bid": 178.2, "ask": 178.8, "spot": 178.5, "volume": 26570000},
+  {"symbol": "TSLA", "exchange": "NASDAQ", "bid": 251.0, "ask": 252.0, "spot": 251.5, "volume": 81230000},
+  {"symbol": "EUR",  "exchange": "ECB",    "bid": 1.084,  "ask": 1.0845, "spot": 1.08425, "volume": 0},
+  {"symbol": "USD",  "exchange": "ECB",    "bid": 1.0,    "ask": 1.0,    "spot": 1.0,      "volume": 0},
+  {"symbol": "HKD",  "exchange": "HKMA",   "bid": 7.8123, "ask": 7.8129, "spot": 7.8126,  "volume": 0}
+]
