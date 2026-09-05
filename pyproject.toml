@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "fina-core"
-version = "0.1.1"
+version = "0.1.2"
 description = "FinA (financial agent): native task pipeline Python library backed by a Rust core"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -17,7 +17,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: System :: Data Storage",
+    "Topic :: System :: Storage",
 ]
 keywords = ["etl", "json", "sonic-rs", "parquet", "rust", "financial", "scheduler", "pipeline"]
 dependencies = ["PyYAML>=6.0"]
