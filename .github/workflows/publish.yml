@@ -23,8 +23,8 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Build Distributions
-        run: uv build
+      - name: Build Distributions (manylinux wheel + sdist)
+        run: uvx maturin build --release --out dist --sdist --compatibility pypi
 
       # Saves the built wheel/tarball so downstream jobs can download it
       - name: Upload Artifacts

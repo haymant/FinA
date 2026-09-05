@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "fina-core"
-version = "0.1.5"
+version = "0.1.6"
 description = "FinA (financial agent): native task pipeline Python library backed by a Rust core"
 readme = "README.md"
 requires-python = ">=3.9"
