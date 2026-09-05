@@ -3,8 +3,8 @@ requires = ["maturin>=1.4,<2.0"]
 build-backend = "maturin"
 
 [project]
-name = "fina"
-version = "0.1.0"
+name = "fina-core"
+version = "0.1.1"
 description = "FinA (financial agent): native task pipeline Python library backed by a Rust core"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -24,5 +24,11 @@ dependencies = ["PyYAML>=6.0"]
 
 [tool.maturin]
 python-source = "python"
-module-name = "fina._core"
+module-name = "fina_core._core"
 features = ["pyo3/extension-module"]
+
+[[tool.uv.index]]
+name = "testpypi"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
+explicit = true

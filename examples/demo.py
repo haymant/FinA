@@ -12,45 +12,45 @@ from __future__ import annotations
 import os
 import tempfile
 
-import fina
+import fina_core
 
 
 # Two pipelines: the first loads a spot reference table into the shared
 # in-memory duckdb store; the second unwinds one row per underlying and
 # LEFT-JOINs against that table to enrich each row with the live spot.
-def build_config(spot_file: str, uni_file: str, out_uri: str) -> fina.PipelinesConfig:
-    return fina.PipelinesConfig([
-        fina.Pipeline(
+def build_config(spot_file: str, uni_file: str, out_uri: str) -> fina_core.PipelinesConfig:
+    return fina_core.PipelinesConfig([
+        fina_core.Pipeline(
             name="mktDataETL",
-            sources=[fina.Source("spot", spot_file)],
+            sources=[fina_core.Source("spot", spot_file)],
             datasets=[
-                fina.Dataset(
+                fina_core.Dataset(
                     "spot", "raw",
-                    to=fina.Output("memory://spot"),
+                    to=fina_core.Output("memory://spot"),
                     fields=[
-                        fina.Field("name", "$._id"),
-                        fina.Field("spot", "cast($.spot as double)"),
+                        fina_core.Field("name", "$._id"),
+                        fina_core.Field("spot", "cast($.spot as double)"),
                     ],
                 ),
             ],
         ),
-        fina.Pipeline(
+        fina_core.Pipeline(
             name="prodETL",
-            sources=[fina.Source("uni", uni_file)],
+            sources=[fina_core.Source("uni", uni_file)],
             datasets=[
-                fina.Dataset(
+                fina_core.Dataset(
                     "products", "unwound", source="uni",
-                    to=fina.Output(out_uri, partition_by=["currency"]),
+                    to=fina_core.Output(out_uri, partition_by=["currency"]),
                     unwind_rules=[
-                        fina.UnwindRule("u", "$.underlyings[0]", "$.underlyings", "u"),
+                        fina_core.UnwindRule("u", "$.underlyings[0]", "$.underlyings", "u"),
                     ],
-                    join=fina.Join("mkt", "memory://spot", "$.u", "name", ["spot"]),
+                    join=fina_core.Join("mkt", "memory://spot", "$.u", "name", ["spot"]),
                     fields=[
-                        fina.Field("instrument_id", "coalesce($.id, $.name)"),
-                        fina.Field("instrument_name", "$.name"),
-                        fina.Field("currency", "coalesce($.currency, 'USD')"),
-                        fina.Field("symbol", "$.u"),
-                        fina.Field("spot", "cast(mkt.spot as double)"),
+                        fina_core.Field("instrument_id", "coalesce($.id, $.name)"),
+                        fina_core.Field("instrument_name", "$.name"),
+                        fina_core.Field("currency", "coalesce($.currency, 'USD')"),
+                        fina_core.Field("symbol", "$.u"),
+                        fina_core.Field("spot", "cast(mkt.spot as double)"),
                     ],
                 ),
             ],
@@ -67,8 +67,8 @@ def main() -> None:
     print("=" * 60)
 
     # 1) orjson-style JSON codecs -------------------------------------------------
-    print("loads  :", fina.loads(open(f"{here}/demo/spot.json", "rb").read())[0])
-    print("dumps  :", fina.dumps({"foo": [1, 2.5, True, None, "x"]}))
+    print("loads  :", fina_core.loads(open(f"{here}/demo/spot.json", "rb").read())[0])
+    print("dumps  :", fina_core.dumps({"foo": [1, 2.5, True, None, "x"]}))
 
     # 2) programmatic config ------------------------------------------------------
     cfg = build_config(spot_file, uni_file, "memory://out.products")
@@ -82,7 +82,7 @@ def main() -> None:
 
     for label, config in (("from YAML string", yml), ("from PipelinesConfig", cfg)):
         print(f"\nrun_pipelines (config: {label})")
-        result = fina.run_pipelines(config)
+        result = fina_core.run_pipelines(config)
         print("  rows     :", result.rows)
         print("  breakdown:", result.breakdown())
 

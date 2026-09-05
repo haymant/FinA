@@ -39,8 +39,8 @@ import sys
 import time
 from typing import Any, Dict, List, Optional
 
-import fina
-from fina.scheduler import Scheduler, TaskHook
+import fina_core
+from fina_core.scheduler import Scheduler, TaskHook
 
 
 class FinishOnStart(TaskHook):

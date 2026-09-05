@@ -1,0 +1,3 @@
+[submodule "fina-pricer"]
+	path = fina-pricer
+	url = https://github.com/haymant/fina-pricer.git

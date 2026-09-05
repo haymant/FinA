@@ -42,7 +42,7 @@ task kind running on it.
 - **Scheduler core** — a Rust/actix task scheduler that behaves like an OS
   process scheduler: priority queue, concurrency slots (`workers`), retries with
   backoff, pause/resume, checkpoints, durable task state, and a single shared
-  snapshot. Driven from Python via `fina.Scheduler` (see
+  snapshot. Driven from Python via `fina_core.Scheduler` (see
   [`docs/scheduler.md`](docs/scheduler.md)).
 - **Scheduled pipelines** — `run_pipelines_scheduled(config, workers=…)` runs an
   ETL plan as a dependency graph of scheduler tasks: serial stages, concurrent
@@ -78,9 +78,9 @@ Prebuilt wheels are published to [PyPI], so installing from a package manager
 is a one-liner — no Rust toolchain required. Requires **Python ≥ 3.9**.
 
 ```bash
-pip install fina
+pip install fina-core
 # or, with uv:
-uv add fina
+uv add fina-core
 ```
 
 Wheels are provided per platform/arch (Linux `manylinux`, macOS `x86_64` and
@@ -89,8 +89,8 @@ Wheels are provided per platform/arch (Linux `manylinux`, macOS `x86_64` and
 To install a specific version or into an existing env:
 
 ```bash
-pip install "fina==0.1.0"
-uv pip install fina --python 3.12
+pip install "fina-core==0.1.1"
+uv pip install fina-core --python 3.12
 ```
 
 ### Building from source (optional)
@@ -107,10 +107,10 @@ or build a wheel:
 
 ```bash
 maturin build --release
-pip install target/wheels/fina-*.whl
+pip install target/wheels/fina_core-*.whl
 ```
 
-[PyPI]: https://pypi.org/project/fina
+[PyPI]: https://pypi.org/project/fina-core
 [maturin]: https://github.com/PyO3/maturin
 
 ---
@@ -119,11 +119,11 @@ pip install target/wheels/fina-*.whl
 
 ```python
 import time
-import fina
+import fina_core
 
 # scheduler core -------------------------------------------------------------
 # no hook = AutoFinishHook: each task finishes as soon as its on_start returns.
-s = fina.Scheduler(workers=4)
+s = fina_core.Scheduler(workers=4)
 s.cmd({"cmd": "restore", "tasks": [
     {"id": "t1", "priority": 1, "info": {}},
     {"id": "t2", "priority": 2, "info": {}},
@@ -133,19 +133,19 @@ s.counts()   # {'pending': 0, 'running': 0, 'finished': 2, ...}
 s.close()
 
 # JSON codecs ----------------------------------------------------------------
-fina.loads(b'{"a":1,"b":[true,null,"x"]}')
+fina_core.loads(b'{"a":1,"b":[true,null,"x"]}')
 # {'a': 1, 'b': [True, None, 'x']}
-fina.dumps({"k": [1, 2.5, True]})
+fina_core.dumps({"k": [1, 2.5, True]})
 # b'{"k":[1,2.5,true]}'
 
 # the ETL task type (one built-in task kind) --------------------------------
-result = fina.run_pipelines("examples/demo/pipelines.yml")
+result = fina_core.run_pipelines("examples/demo/pipelines.yml")
 result.rows        # {'spot': 12, 'products': 1200, 'fx_pairs': 2}
 result.breakdown() # "pipeline 'mktDataETL' dataset 'spot'=1.3 ms  ..."
 result.total_etl_ms()
 
 # or as a scheduled dependency graph (serial stages + fan-out) --------------
-result = fina.run_pipelines_scheduled(
+result = fina_core.run_pipelines_scheduled(
     "examples/scheduler/pipelines.yml", workers=10, retries=2)
 ```
 
@@ -168,7 +168,7 @@ You can pass the config as a **`PipelinesConfig` object**, a plain **`dict`**, a
 **YAML file path**, or a **YAML string**:
 
 ```python
-fina.run_pipelines({"pipelines": [{"name": "x", "datasets": [...]}]})
+fina_core.run_pipelines({"pipelines": [{"name": "x", "datasets": [...]}]})
 ```
 
 ---
@@ -303,7 +303,7 @@ The scheduler is driven by JSON commands through one handle — `start`, `restor
 `set_slots` — see `SchedCmd` in `docs/scheduler.md`. Example:
 
 ```python
-s = fina.Scheduler(workers=4)          # no hook -> AutoFinishHook
+s = fina_core.Scheduler(workers=4)          # no hook -> AutoFinishHook
 s.cmd({"cmd": "restore", "tasks": [{"id": "t1", "priority": 1, "info": {}}]})
 s.counts()
 ```
@@ -321,33 +321,33 @@ partition — and runs it on the scheduler core with retries. See
 ## Programmatic configuration
 
 ```python
-import fina
+import fina_core
 
-cfg = fina.PipelinesConfig([
-    fina.Pipeline(
+cfg = fina_core.PipelinesConfig([
+    fina_core.Pipeline(
         name="mktDataETL",
-        sources=[fina.Source("spot", "file://spot.json")],
+        sources=[fina_core.Source("spot", "file://spot.json")],
         datasets=[
-            fina.Dataset("spot", "raw", to=fina.Output("memory://spot"),
-                             fields=[fina.Field("name", "$._id")]),
+            fina_core.Dataset("spot", "raw", to=fina_core.Output("memory://spot"),
+                             fields=[fina_core.Field("name", "$._id")]),
         ],
     ),
-    fina.Pipeline(
+    fina_core.Pipeline(
         name="prodETL",
-        sources=[fina.Source("uni", "file://uni.json")],
+        sources=[fina_core.Source("uni", "file://uni.json")],
         datasets=[
-            fina.Dataset(
+            fina_core.Dataset(
                 "products", "unwound", source="uni",
-                to=fina.Output("file://out/products", partition_by=["currency"]),
-                unwind_rules=[fina.UnwindRule("u", "$.underlyings[0]", "$.underlyings", "u")],
-                join=fina.Join("mkt", "memory://spot", "$.u", "name", ["spot"]),
-                fields=[fina.Field("spot", "cast(mkt.spot as double)")],
+                to=fina_core.Output("file://out/products", partition_by=["currency"]),
+                unwind_rules=[fina_core.UnwindRule("u", "$.underlyings[0]", "$.underlyings", "u")],
+                join=fina_core.Join("mkt", "memory://spot", "$.u", "name", ["spot"]),
+                fields=[fina_core.Field("spot", "cast(mkt.spot as double)")],
             ),
         ],
     ),
 ])
 yml = cfg.to_yaml()             # -> official ETL YAML string
-fina.run_pipelines(cfg)     # or pass the dict / YAML / path
+fina_core.run_pipelines(cfg)     # or pass the dict / YAML / path
 ```
 
 ---
@@ -395,7 +395,7 @@ fina/
   Cargo.toml            Rust crate (cdylib, PyO3) — deps: pyo3, sonic-rs,
                         parquet/arrow (write only), duckdb (bundled), serde_yaml,
                         actix/actix-rt, tokio
-  pyproject.toml        maturin build, package "fina"
+  pyproject.toml        maturin build, package "fina-core"
   src/
     lib.rs              PyO3 bindings: scheduler_*, run_pipelines, loads, dumps
     scheduler.rs        the scheduler core: actix kernel (queue, states, hooks,
@@ -409,7 +409,7 @@ fina/
     columnar.rs         typed columnar Parquet sink (+ Hive partitioning)
     store.rs            store URIs (file/memory/duckdb) + duckdb join/tables
     sonic.rs            sonic-rs implementation of NValue
-  python/fina/      pure-Python public API (__init__.py, scheduler.py)
+  python/fina_core/  pure-Python public API (__init__.py, scheduler.py)
   examples/             demo + benchmark scripts (ETL task, scheduler core)
   docs/scheduler.md     scheduler core reference
   docs/schema.md        ETL task YAML reference
@@ -517,7 +517,7 @@ one per install.
 6. **Tag the release** in git:
 
    ```bash
-   git tag v0.2.0 && git push origin v0.2.0
+   git tag 0.2.0 && git push origin 0.2.0
    ```
 
 > Use a PyPI API token (`~/.pypirc`) rather than a password. Automate steps 2–5

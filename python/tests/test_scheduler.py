@@ -15,8 +15,8 @@ import time
 
 import pytest
 
-import fina
-from fina.scheduler import Scheduler, TaskHook, TaskState
+import fina_core
+from fina_core.scheduler import Scheduler, TaskHook, TaskState
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 EXAMPLE = REPO / "examples" / "scheduler"
@@ -94,10 +94,10 @@ def test_scheduler_auto_finish_and_slots() -> None:
 
 
 def test_expand_etl_config() -> None:
-    from fina import _core
+    from fina_core import _core
 
     plan = _core.expand_etl_config(_example_yaml(), retries=2)
-    plan = fina.loads(plan)
+    plan = fina_core.loads(plan)
     stages = plan["stages"]
     # 3 pipelines in the execution plan, regardless of fan-out expansion
     assert len(stages) == 3
@@ -108,7 +108,7 @@ def test_expand_etl_config() -> None:
 
 
 def test_etl_scheduler_run() -> None:
-    res = fina.run_pipelines_scheduled(_example_yaml(), workers=10, retries=2, poll_ms=5)
+    res = fina_core.run_pipelines_scheduled(_example_yaml(), workers=10, retries=2, poll_ms=5)
     assert res.ok, res.errors
     assert res.rows["market"] == 8
     assert res.rows["options"] == 9  # 7 instruments unwound into 9 legs

@@ -3,9 +3,9 @@
 
 Measures two things on the 3 GB `data/uni.json` corpus:
 
-1. **Whole ETL** — `fina.run_pipelines(config)` streaming native parse +
+1. **Whole ETL** — `fina_core.run_pipelines(config)` streaming native parse +
    field extraction + Parquet write, plus peak RSS.
-2. **Pure parse (reference)** — materializing the DOM with `fina.loads`
+2. **Pure parse (reference)** — materializing the DOM with `fina_core.loads`
    (sonic-rs), `orjson.loads`, and stdlib `json.loads`, reported for context.
 
 Usage:
@@ -27,7 +27,7 @@ import resource
 import time
 from pathlib import Path
 
-import fina
+import fina_core
 
 
 def _peak_rss_kb() -> int:
@@ -38,10 +38,10 @@ def bench_whole_etl(config: str, out_dir: str) -> None:
     os.makedirs(out_dir, exist_ok=True)
     base_peak = _peak_rss_kb()
     t0 = time.perf_counter()
-    result = fina.run_pipelines(config)
+    result = fina_core.run_pipelines(config)
     wall = (time.perf_counter() - t0) * 1000.0
     peak = _peak_rss_kb()
-    print(f"\nWhole ETL via fina.run_pipelines (native sonic-rs)")
+    print(f"\nWhole ETL via fina_core.run_pipelines (native sonic-rs)")
     print(f"  rows              : {result.rows}")
     print(f"  breakdown         : {result.breakdown()}")
     print(f"  ETL total (per-dataset timings): {result.total_etl_ms():9.1f} ms")
@@ -80,7 +80,7 @@ def main() -> None:
     bench_whole_etl(yaml_text, args.out)
 
     print("\nPure parse (materializing whole DOM — reference only):")
-    bench_pure_parse("fina.loads", fina.loads, data)
+    bench_pure_parse("fina_core.loads", fina_core.loads, data)
     if not args.skip_orjson:
         import orjson
 

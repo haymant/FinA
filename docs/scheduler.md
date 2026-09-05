@@ -202,8 +202,8 @@ at its (optionally elevated) priority.
 
 ```python
 import json
-import fina
-from fina.scheduler import Scheduler, TaskHook, run_pipelines_scheduled
+import fina_core
+from fina_core.scheduler import Scheduler, TaskHook, run_pipelines_scheduled
 
 class MyHook(TaskHook):
     """Python hooks receive task dicts on the task's own OS thread."""
@@ -383,7 +383,7 @@ Rust modules:
 - `src/store.rs` — `SharedDb`, `SharedStore` (scheduler-wide in-memory store).
 - `src/plazy.rs` — `run_pipeline_task_shared(cfg, name, task, store)`.
 
-PyO3 functions on `fina._core`:
+PyO3 functions on `fina_core._core`:
 - `scheduler_new(workers, hook) -> handle`
 - `scheduler_cmd(handle, json)` — `start/pause/resume/kill/finish/reschedule/
   checkpoint/update/restore/set_slots`

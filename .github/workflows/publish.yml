@@ -1,0 +1,89 @@
+name: CI/CD - TestPyPI then PyPI
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+' # e.g. 0.1.1
+
+jobs:
+  build:
+    name: Build Python Distributions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Build Distributions
+        run: uv build
+
+      # Saves the built wheel/tarball so downstream jobs can download it
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  publish-to-testpypi:
+    name: Publish Rehearsal to TestPyPI
+    needs: build
+    runs-on: ubuntu-latest
+    
+    # Required for OIDC / Trusted Publishing
+    permissions:
+      id-token: write
+      contents: read
+
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Download Built Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish to TestPyPI
+        run: uv publish --index testpypi --trusted-publishing always
+
+  publish-to-pypi:
+    name: Publish Release to Live PyPI
+    needs: publish-to-testpypi # Only runs if TestPyPI upload succeeds!
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write   # OIDC / Trusted Publishing
+      contents: read
+      attestations: write # enable PyPI provenance/attestation upload
+
+    environment:
+      name: pypi
+      url: https://pypi.org/project/fina-core
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Download Built Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish to Production PyPI
+        run: uv publish --trusted-publishing always

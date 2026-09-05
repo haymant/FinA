@@ -15,7 +15,7 @@ from __future__ import annotations
 import json
 import os
 
-import fina
+import fina_core
 
 
 def main() -> None:
@@ -32,7 +32,7 @@ def main() -> None:
         yaml_text = f.read()
 
     # 1) show the expansion to scheduler tasks (nothing runs) --------------------
-    plan = json.loads(fina.expand_etl_config(yaml_text, retries=2))
+    plan = json.loads(fina_core.expand_etl_config(yaml_text, retries=2))
     print("\nexpand_etl_config -> task plan")
     for si, stage in enumerate(plan["stages"], 1):
         print(f"  stage {si}: {len(stage)} task(s)")
@@ -48,7 +48,7 @@ def main() -> None:
 
     # 2) run the whole thing through the scheduler -------------------------------
     print("\nrun_pipelines_scheduled (workers=10)")
-    result = fina.run_pipelines_scheduled(yaml_text, workers=10, retries=2, poll_ms=50)
+    result = fina_core.run_pipelines_scheduled(yaml_text, workers=10, retries=2, poll_ms=50)
     print("  ok      :", result.ok)
     print("  rows    :", result.rows)
     print("  timing  :", result.timing)

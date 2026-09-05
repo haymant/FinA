@@ -211,7 +211,7 @@ pipelines:
           - {name: spot, expression: "cast(mkt.spot as double)"}
 ```
 
-Run with `fina.run_pipelines("examples/demo/pipelines.yml")`.
+Run with `fina_core.run_pipelines("examples/demo/pipelines.yml")`.
 
 ## Programmatic construction
 
@@ -219,33 +219,33 @@ The Python surface exposes the schema as dataclasses, so you can build a config
 without hand-writing YAML:
 
 ```python
-import fina
+import fina_core
 
-cfg = fina.PipelinesConfig([
-    fina.Pipeline(
+cfg = fina_core.PipelinesConfig([
+    fina_core.Pipeline(
         name="mktDataETL",
-        sources=[fina.Source("spot", "file://spot.json")],
+        sources=[fina_core.Source("spot", "file://spot.json")],
         datasets=[
-            fina.Dataset("spot", "raw", to=fina.Output("memory://spot"),
+            fina_core.Dataset("spot", "raw", to=fina_core.Output("memory://spot"),
                              fields=[
-                                 fina.Field("name", "$._id"),
-                                 fina.Field("spot", "cast($.spot as double)"),
+                                 fina_core.Field("name", "$._id"),
+                                 fina_core.Field("spot", "cast($.spot as double)"),
                              ]),
         ],
     ),
-    fina.Pipeline(
+    fina_core.Pipeline(
         name="prodETL",
-        sources=[fina.Source("uni", "file://uni.json")],
+        sources=[fina_core.Source("uni", "file://uni.json")],
         datasets=[
-            fina.Dataset(
+            fina_core.Dataset(
                 "products", "unwound", source="uni",
-                to=fina.Output("file://out/products", partition_by=["currency"]),
-                unwind_rules=[fina.UnwindRule("u", "$.underlyings[0]", "$.underlyings", "u")],
-                join=fina.Join("mkt", "memory://spot", "$.u", "name", ["spot"]),
+                to=fina_core.Output("file://out/products", partition_by=["currency"]),
+                unwind_rules=[fina_core.UnwindRule("u", "$.underlyings[0]", "$.underlyings", "u")],
+                join=fina_core.Join("mkt", "memory://spot", "$.u", "name", ["spot"]),
                 fields=[
-                    fina.Field("instrument_id", "coalesce($.id, $.name)"),
-                    fina.Field("symbol", "$.u"),
-                    fina.Field("spot", "cast(mkt.spot as double)"),
+                    fina_core.Field("instrument_id", "coalesce($.id, $.name)"),
+                    fina_core.Field("symbol", "$.u"),
+                    fina_core.Field("spot", "cast(mkt.spot as double)"),
                 ],
             ),
         ],
@@ -255,4 +255,4 @@ yml = cfg.to_yaml()
 ```
 
 You can also pass the dataclass config (or a plain `dict`, or a YAML file path)
-directly to `fina.run_pipelines(config)`.
+directly to `fina_core.run_pipelines(config)`.

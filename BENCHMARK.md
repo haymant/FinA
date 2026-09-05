@@ -18,7 +18,7 @@ the repo by size; reproduce via the `rust_simdetl` harness or a large generated
 `uni.json`. `disk read` (~2 s) is excluded from the ETL total because it is
 identical for every path.
 
-### Whole ETL — `fina.run_pipelines` (native sonic-rs, streaming, no DOM)
+### Whole ETL — `fina_core.run_pipelines` (native sonic-rs, streaming, no DOM)
 
 | dataset        | time     |
 |----------------|----------|
