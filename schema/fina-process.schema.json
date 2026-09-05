@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/haymant/fina/blob/main/schema/fina-process.schema.json",
+  "title": "FinA process definition",
+  "type": "object",
+  "required": ["api_version", "kind", "metadata", "parameters", "threads"],
+  "properties": {
+    "api_version": {"const": "fina/v1"},
+    "kind": {"const": "FinaProcess"},
+    "metadata": {"type": "object", "required": ["name"], "properties": {"name": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"}, "version": {"type": "string"}}, "additionalProperties": false},
+    "parameters": {"type": "object", "additionalProperties": true},
+    "inputs": {"type": "array", "items": {"type": "string"}},
+    "threads": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/thread"}},
+    "subscriptions": {"type": "array", "items": {"$ref": "#/$defs/subscription"}}
+  },
+  "$defs": {
+    "thread": {"type": "object", "required": ["name", "handler"], "properties": {"name": {"type": "string"}, "handler": {"type": "string"}, "depends_on": {"type": "array", "items": {"type": "string"}}, "parameters": {"type": "object", "additionalProperties": true}, "priority": {"type": "integer"}, "retry": {"type": "object", "properties": {"max_attempts": {"type": "integer", "minimum": 0}}, "additionalProperties": false}}, "additionalProperties": false},
+    "subscription": {"type": "object", "required": ["topic", "handler"], "properties": {"topic": {"type": "string"}, "handler": {"type": "string"}, "start_thread": {"type": "string"}}, "additionalProperties": false}
+  },
+  "additionalProperties": false
+}

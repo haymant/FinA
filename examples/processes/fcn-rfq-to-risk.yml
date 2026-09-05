@@ -1,0 +1,32 @@
+api_version: fina/v1
+kind: FinaProcess
+metadata:
+  name: fcn-rfq-to-risk
+  version: '1'
+parameters:
+  eval_datetime: ${eval_datetime}
+  market_data_date: ${market_data_date}
+  scenario_id: ${scenario_id}
+  trade_repository_snapshot_datetime: ${trade_repository_snapshot_datetime}
+threads:
+  - name: quote
+    handler: fina-pricer.pricing_and_sensitivity
+  - name: register_trade
+    handler: fina-trade.register
+    depends_on: [quote]
+  - name: observe_and_amend
+    handler: fina-trade.observe
+    depends_on: [register_trade]
+  - name: reprice
+    handler: fina-pricer.pricing_and_sensitivity
+    depends_on: [observe_and_amend]
+  - name: grouped_sensitivity_olap
+    handler: fina-olap.group_sensitivities
+    depends_on: [reprice]
+subscriptions:
+  - topic: trade.lifecycle.amended
+    handler: fina-pricer.pricing_and_sensitivity
+    start_thread: reprice
+  - topic: trade.lifecycle.cancelled
+    handler: fina-core-scheduler.cancel
+    start_thread: reprice

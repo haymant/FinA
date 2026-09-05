@@ -44,6 +44,7 @@ from .scheduler import (
     TaskHook,
     run_pipelines_scheduled,
 )
+from .process_scheduler import Event, EventBus, ProcessInstance, SchedulerService, ThreadInstance, render_parameters
 
 __all__ = [
     "__version__",
@@ -63,7 +64,7 @@ __all__ = [
     "EtlResult",
     "ETL_SCHEMA",
     "expand_etl_config",
-] + ["Scheduler", "TaskHook", "ScheduledRun", "run_pipelines_scheduled"]
+] + ["Scheduler", "TaskHook", "ScheduledRun", "run_pipelines_scheduled", "Event", "EventBus", "ProcessInstance", "SchedulerService", "ThreadInstance", "render_parameters"]
 
 
 # ---------------------------------------------------------------------------

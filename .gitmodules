@@ -1,3 +1,6 @@
 [submodule "fina-pricer"]
 	path = fina-pricer
 	url = https://github.com/haymant/fina-pricer.git
+[submodule "modules/fina-trade"]
+	path = modules/fina-trade
+	url = https://github.com/haymant/fina-trade.git

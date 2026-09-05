@@ -14,6 +14,9 @@ authors = [{ name = "Traco Dev", email = "dev@lizhao.net" }]
 keywords = ["etl", "json", "sonic-rs", "parquet", "rust", "financial", "scheduler", "pipeline"]
 dependencies = ["PyYAML>=6.0"]
 
+[project.optional-dependencies]
+mcp = ["mcp>=1.6,<2"]
+
 [tool.maturin]
 python-source = "python"
 module-name = "fina_core._core"
