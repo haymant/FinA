@@ -1,6 +1,6 @@
 [package]
 name = "fina"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "FinA (financial agent) core: Rust (pyo3 + sonic-rs) native whole-ETL engine exposed to Python"
 license = "MIT"
