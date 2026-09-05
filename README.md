@@ -60,7 +60,7 @@ task kind running on it.
   (`src/native.rs` supplies a small accessor trait; `src/sonic.rs` implements it
   for sonic-rs). Peak memory stays ~2× input, not 5–8×.
 - **Official ETL YAML schema** — see [`docs/schema.md`](docs/schema.md) and
-  [`schema/etl.schema.json`](schema/etl.schema.json). Build configs
+  [`skills/fina-core-scheduler/schema/etl.schema.json`](skills/fina-core-scheduler/schema/etl.schema.json). Build configs
   programmatically with `PipelinesConfig` / `Pipeline` / `Source` / `Dataset` /
   `Field` / `UnwindRule` / `Join` / `Output`.
 - **Streaming Parquet writer** — row-grouped, so even a multi-GB `json_blob`
@@ -176,7 +176,7 @@ fina_core.run_pipelines({"pipelines": [{"name": "x", "datasets": [...]}]})
 ## The ETL task: YAML schema
 
 See **[`docs/schema.md`](docs/schema.md)** for the full reference and
-**[`schema/etl.schema.json`](schema/etl.schema.json)** for the machine-readable
+**[`skills/fina-core-scheduler/schema/etl.schema.json`](skills/fina-core-scheduler/schema/etl.schema.json)** for the machine-readable
 schema. A minimal pipeline:
 
 ```yaml
@@ -413,7 +413,7 @@ fina/
   examples/             demo + benchmark scripts (ETL task, scheduler core)
   docs/scheduler.md     scheduler core reference
   docs/schema.md        ETL task YAML reference
-  schema/etl.schema.json  machine-readable JSON Schema (ETL task)
+  skills/fina-core-scheduler/schema/etl.schema.json  machine-readable JSON Schema (ETL task)
   BENCHMARK.md          benchmark methodology + results
 ```
 

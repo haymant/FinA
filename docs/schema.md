@@ -14,8 +14,8 @@ Each *pipeline* declares any number of named **sources** (inputs) and
 Datasets may optionally **LEFT JOIN** against a table produced earlier in the
 same `run_pipelines` call (a `memory://` or `duckdb://` target).
 
-A JSON Schema mirror is provided at
-[`schema/etl.schema.json`](../schema/etl.schema.json).
+A JSON Schema mirror is bundled with the scheduler skill at
+[`skills/fina-core-scheduler/schema/etl.schema.json`](../skills/fina-core-scheduler/schema/etl.schema.json).
 
 ## Store URIs
 
