@@ -43,6 +43,7 @@
           "items": {"type": "string"}
         },
         "parameters": {"type": "object", "additionalProperties": true},
+        "triggered_by": {"type": "string"},
         "priority": {"type": "integer"},
         "retry": {
           "type": "object",

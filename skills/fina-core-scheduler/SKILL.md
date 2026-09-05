@@ -25,9 +25,11 @@ subscriptions:
 
 ## Handler wiring: important limitation
 
-`handler: fina-pricer.pricing_and_sensitivity` is currently a **symbolic handler name**, not an automatic cross-server invocation. `SchedulerService` resolves a handler only from its in-process `register_handler(name, callable)` registry. The scheduler MCP façade does not discover or invoke another MCP server. To make this thread live, an adapter must register that name and call the pricer MCP tool with a complete `PricingRequest`; the adapter then returns the tool response as the thread result. The real pricer server currently exposes `pricing_and_sensitivity(request)` plus scenario and OLAP tools in `fina-pricer/src/riskcube_mcp/server.py`.
+`SchedulerService` resolves a handler from its in-process `register_handler(name, callable)` registry. The canonical wiring helper is `fina_core.integrations.register_fina_handlers`; it registers `fina-pricer.pricing_and_sensitivity`, `fina-trade.register`, `fina-trade.amend`, and `fina-olap.group_sensitivities`. The pricing callable may invoke the pricer MCP tool or direct `riskcube_mcp.sensitivity`; the scheduler itself is transport-neutral.
 
-The separately executed fixture in `fina-pricer/data/attachment_sample.json` produced this real quote through `riskcube_mcp.sensitivity`: PV `824303.9345074219 USD`, PV standard error `353.61628746253473 USD`, notional `770000 USD`, price `107.05245902693792%`, and four RiskCube cells. This is evidence of the pricer result, not evidence that the scheduler currently called it.
+`fina-trade.amend` publishes a repository lifecycle envelope into the scheduler `EventBus` only after a successful mutation. A process subscription resolves `start_thread: reprice`, injects the event payload into that thread, and executes the registered pricing handler. The `olap` thread depends on `reprice`, so it runs after the event-triggered quote.
+
+The separately executed fixture in `fina-pricer/data/attachment_sample.json` produced this real quote through `riskcube_mcp.sensitivity`: PV `824303.9345074219 USD`, PV standard error `353.61628746253473 USD`, notional `770000 USD`, price `107.05245902693792%`, and four RiskCube cells. The executable wired verification is `examples/e2e_wired_verify.py`; it calls the real pricer implementation twice, persists a real `TradeRepository` trade, publishes `trade.lifecycle.amended`, triggers the reprice thread, and performs grouped OLAP.
 
 ## MCP operations
 
@@ -39,7 +41,7 @@ A dependent thread cannot run until every `depends_on` thread is `FINISHED`. A h
 
 ## Verification
 
-Run the scheduler contract tests from the repository root with `pytest -q python/tests/test_process_scheduler.py`. For an end-to-end run, register explicit adapters for `fina-pricer.pricing_and_sensitivity`, `fina-trade.register`, and `fina-olap.group_sensitivities`; submit a process containing quote, register, amend-event reprice, and OLAP threads; then assert all expected states/results and event delivery count. Use the native ETL scheduler for existing `pipelines:` documents; use `FinaProcess` for cross-feature orchestration.
+Run the scheduler contract tests from the repository root with `pytest -q python/tests/test_process_scheduler.py python/tests/test_process_wired.py`. Run `examples/e2e_wired_verify.py` in an environment containing `fina-core`, `fina-trade`, and `fina-pricer`; it registers the real adapters, calls pricing twice, persists a trade, publishes an amendment event, triggers re-pricing, and groups the resulting sensitivities. Use the native ETL scheduler for existing `pipelines:` documents; use `FinaProcess` for cross-feature orchestration.
 
 ## MCP client evidence
 

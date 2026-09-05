@@ -92,11 +92,62 @@ class SchedulerService:
             tid = process_id + "/" + spec["name"]
             merged = dict(spec.get("parameters", {}))
             merged.update(params)
-            process.threads[tid] = ThreadInstance(tid, process_id, spec["name"], spec["handler"], merged, list(spec.get("depends_on", [])))
+            state = "WAITING" if spec.get("triggered_by") else "PENDING"
+            process.threads[tid] = ThreadInstance(tid, process_id, spec["name"], spec["handler"], merged, list(spec.get("depends_on", [])), state=state)
         with self._lock:
             self.processes[process_id] = process
+        for subscription in definition.get("subscriptions", []):
+            topic = subscription["topic"]
+            subscriber_id = process_id + "/subscription/" + topic
+            self.bus.subscribe(topic, subscriber_id, self._subscription_handler(process, subscription))
         self._run_ready(process)
         return process
+
+    def _subscription_handler(self, process: ProcessInstance, subscription: Dict[str, Any]) -> Callable[[Event], None]:
+        def receive(event: Event) -> None:
+            start_thread = subscription.get("start_thread")
+            if not start_thread:
+                return
+            template = next((item for item in process.threads.values() if item.name == start_thread), None)
+            if template is None:
+                raise KeyError("subscription start_thread is not declared: " + start_thread)
+            self.spawn_thread(
+                process.id,
+                start_thread,
+                template.handler,
+                parameters={"event": event.payload, "event_id": event.event_id},
+                depends_on=[],
+            )
+        return receive
+
+    def spawn_thread(
+        self,
+        process_id: str,
+        name: str,
+        handler: str,
+        *,
+        parameters: Optional[Dict[str, Any]] = None,
+        depends_on: Optional[List[str]] = None,
+    ) -> ThreadInstance:
+        process = self.processes[process_id]
+        base_id = process_id + "/" + name
+        dormant = process.threads.get(base_id)
+        if dormant is not None and dormant.state == "WAITING":
+            dormant.parameters.update(parameters or {})
+            dormant.state = "PENDING"
+            self._run_ready(process)
+            return dormant
+        thread_id = base_id
+        suffix = 2
+        while thread_id in process.threads:
+            thread_id = base_id + "#" + str(suffix)
+            suffix += 1
+        merged = dict(process.parameters)
+        merged.update(parameters or {})
+        thread = ThreadInstance(thread_id, process_id, name, handler, merged, list(depends_on or []))
+        process.threads[thread_id] = thread
+        self._run_ready(process)
+        return thread
 
     def command(self, command: Dict[str, Any]) -> Dict[str, Any]:
         self.commands.append(copy.deepcopy(command))
@@ -116,11 +167,19 @@ class SchedulerService:
             if tid in p.threads: return p.threads[tid]
         raise KeyError(tid)
 
+    def result(self, process_id: str, name: str) -> Any:
+        """Return the latest result for a named thread in a process."""
+        process = self.processes[process_id]
+        matches = [thread for thread in process.threads.values() if thread.name == name and thread.state == "FINISHED"]
+        if not matches:
+            raise KeyError(process_id + "/" + name)
+        return matches[-1].result
+
     def _run_ready(self, process: ProcessInstance) -> None:
         changed = True
         while changed:
             changed = False
-            for thread in process.threads.values():
+            for thread in list(process.threads.values()):
                 if thread.state != "PENDING" or any(process.threads.get(process.id + "/" + dep, ThreadInstance("", "", "", "", {})).state != "FINISHED" for dep in thread.depends_on):
                     continue
                 handler = self.handlers.get(thread.handler)

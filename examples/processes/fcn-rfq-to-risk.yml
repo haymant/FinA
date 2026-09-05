@@ -19,6 +19,7 @@ threads:
     depends_on: [register_trade]
   - name: reprice
     handler: fina-pricer.pricing_and_sensitivity
+    triggered_by: trade.lifecycle.amended
     depends_on: [observe_and_amend]
   - name: grouped_sensitivity_olap
     handler: fina-olap.group_sensitivities
