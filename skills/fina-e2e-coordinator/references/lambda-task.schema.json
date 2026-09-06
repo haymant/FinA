@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/haymant/fina/blob/main/skills/fina-e2e-coordinator/references/lambda-task.schema.json",
+  "title": "FinA lambda task context",
+  "description": "A self-contained task declaration and execution context for one FinaProcess thread.",
+  "type": "object",
+  "required": ["task", "handler", "context"],
+  "properties": {
+    "task": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "handler": {"type": "string"},
+    "context": {
+      "type": "object",
+      "required": ["correlation_id", "inputs", "dependency_results", "event", "attempt"],
+      "properties": {
+        "correlation_id": {"type": "string"},
+        "inputs": {"type": "object", "additionalProperties": true},
+        "dependency_results": {"type": "object", "additionalProperties": true},
+        "event": {"type": ["object", "null"], "additionalProperties": true},
+        "attempt": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "output": {"type": "object", "additionalProperties": true}
+  },
+  "additionalProperties": false
+}
