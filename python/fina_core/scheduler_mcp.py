@@ -6,6 +6,7 @@ The MCP dependency is optional so the core package remains lightweight.
 """
 from __future__ import annotations
 
+import os
 from typing import Any, Dict, Optional
 from .process_scheduler import Event, SchedulerService, render_parameters
 
@@ -15,6 +16,11 @@ except ImportError:  # pragma: no cover
     FastMCP = None  # type: ignore
 
 service = SchedulerService()
+
+
+def get_service() -> SchedulerService:
+    """Return the process-wide scheduler state for this long-running runtime."""
+    return service
 
 if FastMCP is not None:
     mcp = FastMCP("fina-core-scheduler")
@@ -58,7 +64,10 @@ else:
 def main() -> None:
     if mcp is None:
         raise SystemExit("Install the optional MCP dependency: pip install 'fina-core[mcp]'")
-    mcp.run(transport="stdio")
+    # Keep one service object alive for the lifetime of the daemon. Use
+    # FINA_SCHEDULER_TRANSPORT=streamable-http for the shared HTTP instance;
+    # stdio remains a single-session daemon with the same process-wide state.
+    mcp.run(transport=os.environ.get("FINA_SCHEDULER_TRANSPORT", "stdio"))
 
 
 if __name__ == "__main__":

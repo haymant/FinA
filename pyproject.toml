@@ -14,6 +14,9 @@ authors = [{ name = "Traco Dev", email = "dev@lizhao.net" }]
 keywords = ["etl", "json", "sonic-rs", "parquet", "rust", "financial", "scheduler", "pipeline"]
 dependencies = ["PyYAML>=6.0"]
 
+[project.scripts]
+fina-core-scheduler = "fina_core.scheduler_mcp:main"
+
 [project.optional-dependencies]
 mcp = ["mcp>=1.6,<2"]
 

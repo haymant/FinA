@@ -35,6 +35,8 @@ The separately executed fixture in `fina-pricer/data/attachment_sample.json` pro
 
 The optional MCP server is `fina_core.scheduler_mcp`. It supports stdio (`python -m fina_core.scheduler_mcp`) and streamable HTTP (`uvicorn fina_core.scheduler_mcp:app`). Use `process_submit`, `scheduler_query`, `scheduler_command`, `pubsub_subscribe`, and `pubsub_publish`. Commands are formally shaped as `{command: pause|resume|cancel|publish, thread_id?, topic?, payload?}`. Events are `{topic, payload, event_id, process_id?, thread_id?}` and must use stable dot-separated topics, for example `trade.lifecycle.amended`.
 
+Run one long-lived scheduler daemon for shared process/thread state. The module-level `SchedulerService` is created once per daemon and is reused by every HTTP request or stdio tool call handled by that process. For a shared remote endpoint, run `FINA_SCHEDULER_TRANSPORT=streamable-http fina-core-scheduler` behind a persistent host; do not use stateless serverless instances for scheduler state. A stdio deployment must keep its process alive for the full client session. If stdio and HTTP clients must share state, route both through the same long-lived daemon or add a durable scheduler state backend; separate short-lived processes do not share the in-memory service.
+
 ## Lifecycle and error rules
 
 A dependent thread cannot run until every `depends_on` thread is `FINISHED`. A handler error is recorded as `FAILED` and is never silently converted to a successful quote. Lifecycle handlers should publish domain events after a durable trade mutation; a subscription may then spawn a re-pricing thread with the event payload. Keep event payloads JSON-serializable and never put credentials in parameters, events, logs, or results.
