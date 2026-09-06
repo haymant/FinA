@@ -135,6 +135,7 @@ def run() -> dict[str, Any]:
     trade_mcp = RemoteMCP(TRADE_URL)
     scheduler = SchedulerService()
     trades = RemoteTradeRepository(trade_mcp, scheduler)
+    trade_id = "T-REMOTE-E2E-" + str(int(time.time()))
     pricing_calls: list[dict[str, Any]] = []
 
     def pricing(request: dict[str, Any]) -> dict[str, Any]:
@@ -150,24 +151,24 @@ def run() -> dict[str, Any]:
     register_fina_handlers(scheduler, pricing_callable=pricing, trade_repository=trades, olap_callable=olap)
     process = scheduler.create_process({
         "api_version": "fina/v1", "kind": "FinaProcess", "metadata": {"name": "remote-fcn-rfq-to-risk"},
-        "parameters": {"pricing_request": RFQ, "trade_id": "T-REMOTE-E2E", "correlation_id": "remote-coordinator-e2e"},
+        "parameters": {"pricing_request": RFQ, "trade_id": trade_id, "correlation_id": "remote-coordinator-e2e"},
         "threads": [
-            {"name": "quote", "handler": "fina-pricer.pricing_and_sensitivity", "parameters": {"trade_id": "T-REMOTE-E2E"}},
-            {"name": "register_trade", "handler": "fina-trade.register", "depends_on": ["quote"], "parameters": {"trade": {"trade_id": "T-REMOTE-E2E", "instrument_id": "FCN_REMOTE_E2E", "product_type": "FCN", "notional": 100000.0, "currency": "USD", "status": "LIVE"}}},
-            {"name": "amend", "handler": "fina-trade.amend", "depends_on": ["register_trade"], "parameters": {"trade_id": "T-REMOTE-E2E", "changes": {"observation_date": "2026-10-06"}, "reason": "coordinator-lifecycle-e2e"}},
-            {"name": "reprice", "handler": "fina-pricer.pricing_and_sensitivity", "triggered_by": "trade.lifecycle.amended", "parameters": {"trade_id": "T-REMOTE-E2E"}},
+            {"name": "quote", "handler": "fina-pricer.pricing_and_sensitivity", "parameters": {"trade_id": trade_id}},
+            {"name": "register_trade", "handler": "fina-trade.register", "depends_on": ["quote"], "parameters": {"trade": {"trade_id": trade_id, "instrument_id": "FCN_REMOTE_E2E", "product_type": "FCN", "notional": 100000.0, "currency": "USD", "status": "LIVE"}}},
+            {"name": "amend", "handler": "fina-trade.amend", "depends_on": ["register_trade"], "parameters": {"trade_id": trade_id, "changes": {"observation_date": "2026-10-06"}, "reason": "coordinator-lifecycle-e2e"}},
+            {"name": "reprice", "handler": "fina-pricer.pricing_and_sensitivity", "triggered_by": "trade.lifecycle.amended", "parameters": {"trade_id": trade_id}},
             {"name": "olap", "handler": "fina-olap.group_sensitivities", "depends_on": ["reprice"]},
         ],
         "subscriptions": [{"topic": "trade.lifecycle.amended", "handler": "fina-pricer.pricing_and_sensitivity", "start_thread": "reprice"}],
     })
     snapshot = scheduler.snapshot(process.id)[0]
-    lifecycle = trade_mcp.call("trade_lifecycle", {"trade_id": "T-REMOTE-E2E"})
+    lifecycle = trade_mcp.call("trade_lifecycle", {"trade_id": trade_id})
     assert process.state == "FINISHED", snapshot
     assert len(pricing_calls) == 2, len(pricing_calls)
-    assert trades.trades["T-REMOTE-E2E"]["status"] == "AMENDED"
+    assert trades.trades[trade_id]["status"] == "AMENDED"
     assert any(item["event_type"] == "amended" for item in lifecycle["result"])
     assert scheduler.result(process.id, "olap")["rows"][0]["trade_count"] == 1
-    return {"process_id": process.id, "process_state": process.state, "pricing_calls": len(pricing_calls), "rfq_id": trades.rfq_id, "quote_id": trades.quote_id, "trade": trades.trades["T-REMOTE-E2E"], "lifecycle_events": [item["event_type"] for item in lifecycle["result"]], "olap": scheduler.result(process.id, "olap"), "snapshot": snapshot}
+    return {"process_id": process.id, "process_state": process.state, "pricing_calls": len(pricing_calls), "rfq_id": trades.rfq_id, "quote_id": trades.quote_id, "trade": trades.trades[trade_id], "lifecycle_events": [item["event_type"] for item in lifecycle["result"]], "olap": scheduler.result(process.id, "olap"), "snapshot": snapshot}
 
 
 if __name__ == "__main__":
