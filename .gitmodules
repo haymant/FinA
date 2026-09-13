@@ -4,3 +4,6 @@
 [submodule "modules/fina-trade"]
 	path = modules/fina-trade
 	url = https://github.com/haymant/fina-trade.git
+[submodule "fina-olap"]
+	path = fina-olap
+	url = https://github.com/haymant/fina-olap.git
