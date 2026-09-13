@@ -25,7 +25,20 @@ subscriptions:
 
 ## Handler wiring: important limitation
 
-`SchedulerService` resolves a handler from its in-process `register_handler(name, callable)` registry. The canonical wiring helper is `fina_core.integrations.register_fina_handlers`; it registers `fina-pricer.pricing_and_sensitivity`, `fina-trade.register`, `fina-trade.amend`, and `fina-olap.group_sensitivities`. The pricing callable may invoke the pricer MCP tool or direct `riskcube_mcp.sensitivity`; the scheduler itself is transport-neutral.
+`SchedulerService` resolves a handler from its in-process `register_handler(name, callable)` registry. The canonical wiring helper is `fina_core.integrations.register_fina_handlers`; it registers `fina-pricer.pricing_and_sensitivity`, `fina-trade.register`, `fina-trade.amend`, and `fina-olap.group_sensitivities` + `fina-olap.olap_query`. Pass `risk_callable=` to additionally register the fina-risk compute/ETL handlers: `fina-risk.pricing_and_sensitivity`, `fina-risk.risk_batch`, `fina-etl.augment_termsheet`, and `fina-etl.compile_pricing_requests` (forward to the fina-risk MCP tools `run_risk_task` / `run_etl_task`). The pricing callable may invoke the pricer MCP tool or direct `riskcube_mcp.sensitivity`; the scheduler itself is transport-neutral.
+
+A canonical end-to-end process is `examples/processes/fina-risk-augment-to-olap.yml`:
+`augment` (fina-etl) → `compile` (fina-etl) → `risk` (fina-risk `risk_batch`, `use_compiled: true`
+consumes the compiled requests) → `olap` (fina-olap `olap_query` over the shared store).
+
+### Priority and preemption
+
+Every thread declares an integer `priority` (higher = more urgent). The scheduler
+runs the highest-priority **ready** thread first (ties break on declaration
+order), so a high-priority task is scheduled before lower-priority ones. The
+`preempt` command `{command: preempt, process_id, priority}` pauses every
+PENDING/RUNNING/PAUSED thread below `priority` so higher-priority work can finish
+first; `resume` returns a paused thread to PENDING.
 
 `fina-trade.amend` publishes a repository lifecycle envelope into the scheduler `EventBus` only after a successful mutation. A process subscription resolves `start_thread: reprice`, injects the event payload into that thread, and executes the registered pricing handler. The `olap` thread depends on `reprice`, so it runs after the event-triggered quote.
 
@@ -43,7 +56,13 @@ A dependent thread cannot run until every `depends_on` thread is `FINISHED`. A h
 
 ## Verification
 
-Run the scheduler contract tests from the repository root with `pytest -q python/tests/test_process_scheduler.py python/tests/test_process_wired.py`. Run `examples/e2e_wired_verify.py` in an environment containing `fina-core`, `fina-trade`, and `fina-pricer`; it registers the real adapters, calls pricing twice, persists a trade, publishes an amendment event, triggers re-pricing, and groups the resulting sensitivities. Use the native ETL scheduler for existing `pipelines:` documents; use `FinaProcess` for cross-feature orchestration.
+Run the scheduler contract tests from the repository root with `pytest -q python/tests/test_process_scheduler.py python/tests/test_process_wired.py python/tests/test_process_fina_risk.py`. Run the executable coordinator e2e in an environment with `fina-core` (built) + `fina-risk`:
+
+```bash
+PYTHONPATH=python python examples/e2e_fina_risk_olap.py --count 30 --paths 128 --root /tmp/fina-risk-e2e
+```
+
+It drives `fina-risk-augment-to-olap.yml` (augment → compile → risk → olap), persists `risk_wide`/`risk_long` to the shared store, and queries them back. Run `examples/e2e_wired_verify.py` in an environment containing `fina-core`, `fina-trade`, and `fina-pricer`; it registers the real adapters, calls pricing twice, persists a trade, publishes an amendment event, triggers re-pricing, and groups the resulting sensitivities. Use the native ETL scheduler for existing `pipelines:` documents; use `FinaProcess` for cross-feature orchestration.
 
 ## MCP client evidence
 

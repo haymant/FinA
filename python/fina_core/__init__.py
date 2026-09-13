@@ -35,9 +35,22 @@ import sys
 from dataclasses import dataclass, field
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Union
 
-from . import _core
-from ._core import __version__  # noqa: F401
-from ._core import expand_etl_config  # noqa: F401
+try:  # the native sonic-rs core is optional for the pure-Python process scheduler
+    from . import _core
+    from ._core import __version__  # noqa: F401
+    from ._core import expand_etl_config  # noqa: F401
+except Exception:  # pragma: no cover - exercised when the extension is not built
+    _core = None  # type: ignore[assignment]
+    __version__ = "0.0.0+no-native"  # type: ignore[assignment]
+
+    def expand_etl_config(*_args: Any, **_kwargs: Any) -> Any:  # type: ignore[misc]
+        raise RuntimeError("fina_core native extension is not built (run `maturin develop`)")
+
+
+def _require_core() -> Any:
+    if _core is None:
+        raise RuntimeError("fina_core native extension is not built (run `maturin develop`)")
+    return _core
 from .scheduler import (
     Scheduler,
     ScheduledRun,
@@ -87,14 +100,14 @@ def loads(data: Union[str, bytes, bytearray, memoryview]) -> Any:
     Accepts ``str`` or ``bytes`` (like orjson, which only takes ``bytes``, we
     additionally accept ``str`` for convenience).
     """
-    return _core.loads(_as_bytes(data))
+    return _require_core().loads(_as_bytes(data))
 
 
 def dumps(obj: Any, option: int = 0) -> bytes:
     """Serialize a Python object to JSON ``bytes`` using the sonic-rs core."""
     if not isinstance(option, int):
         raise TypeError("option must be an int")
-    return _core.dumps(obj, option)
+    return _require_core().dumps(obj, option)
 
 
 #: Matches orjson.OPT_* envelope position (we only support the default for now).
@@ -442,7 +455,7 @@ def run_pipelines(
     else:
         yaml_text = str(config)
 
-    raw = _core.run_pipelines(yaml_text)
+    raw = _require_core().run_pipelines(yaml_text)
     return EtlResult(
         timing=list(raw["timing"]),
         datasets=dict(raw["datasets"]),

@@ -56,6 +56,7 @@ class ThreadInstance:
     result: Any = None
     error: Optional[str] = None
     attempts: int = 0
+    priority: int = 0
 
 
 @dataclass
@@ -93,7 +94,16 @@ class SchedulerService:
             merged = dict(spec.get("parameters", {}))
             merged.update(params)
             state = "WAITING" if spec.get("triggered_by") else "PENDING"
-            process.threads[tid] = ThreadInstance(tid, process_id, spec["name"], spec["handler"], merged, list(spec.get("depends_on", [])), state=state)
+            process.threads[tid] = ThreadInstance(
+                tid,
+                process_id,
+                spec["name"],
+                spec["handler"],
+                merged,
+                list(spec.get("depends_on", [])),
+                state=state,
+                priority=int(spec.get("priority", 0)),
+            )
         with self._lock:
             self.processes[process_id] = process
         for subscription in definition.get("subscriptions", []):
@@ -128,12 +138,14 @@ class SchedulerService:
         *,
         parameters: Optional[Dict[str, Any]] = None,
         depends_on: Optional[List[str]] = None,
+        priority: int = 0,
     ) -> ThreadInstance:
         process = self.processes[process_id]
         base_id = process_id + "/" + name
         dormant = process.threads.get(base_id)
         if dormant is not None and dormant.state == "WAITING":
             dormant.parameters.update(parameters or {})
+            dormant.priority = priority
             dormant.state = "PENDING"
             self._run_ready(process)
             return dormant
@@ -144,7 +156,7 @@ class SchedulerService:
             suffix += 1
         merged = dict(process.parameters)
         merged.update(parameters or {})
-        thread = ThreadInstance(thread_id, process_id, name, handler, merged, list(depends_on or []))
+        thread = ThreadInstance(thread_id, process_id, name, handler, merged, list(depends_on or []), priority=priority)
         process.threads[thread_id] = thread
         self._run_ready(process)
         return thread
@@ -155,6 +167,18 @@ class SchedulerService:
         if action == "publish":
             event = Event(command["topic"], command.get("payload", {}), process_id=command.get("process_id"), thread_id=command.get("thread_id"))
             return {"delivered": self.bus.publish(event), "event_id": event.event_id}
+        if action == "preempt":
+            process = self.processes[command["process_id"]]
+            threshold = int(command.get("priority", 0))
+            paused = [
+                t.id
+                for t in process.threads.values()
+                if t.state in ("PENDING", "RUNNING", "PAUSED") and t.priority < threshold
+            ]
+            for thread in process.threads.values():
+                if thread.id in paused:
+                    thread.state = "PAUSED"
+            return {"process_id": process.id, "priority": threshold, "paused": paused}
         if action in ("pause", "resume", "cancel"):
             thread = self._thread(command["thread_id"])
             thread.state = {"pause": "PAUSED", "resume": "PENDING", "cancel": "CANCELLED"}[action]
@@ -176,29 +200,39 @@ class SchedulerService:
         return matches[-1].result
 
     def _run_ready(self, process: ProcessInstance) -> None:
-        changed = True
-        while changed:
-            changed = False
-            for thread in list(process.threads.values()):
-                if thread.state != "PENDING" or any(process.threads.get(process.id + "/" + dep, ThreadInstance("", "", "", "", {})).state != "FINISHED" for dep in thread.depends_on):
-                    continue
-                handler = self.handlers.get(thread.handler)
-                if handler is None:
-                    thread.state, thread.result = "FINISHED", {"handler": thread.handler, "parameters": thread.parameters}
-                else:
-                    thread.state, thread.attempts = "RUNNING", thread.attempts + 1
-                    try:
-                        thread.result = handler(thread, self)
-                        thread.state = "FINISHED"
-                    except Exception as exc:  # deterministic terminal state for orchestration errors
-                        thread.state, thread.error = "FAILED", str(exc)
-                changed = True
-                self.bus.publish(Event("fina.thread." + thread.state.lower(), {"thread_id": thread.id, "result": thread.result}, process_id=process.id, thread_id=thread.id))
-        if all(t.state in ("FINISHED", "CANCELLED") for t in process.threads.values()): process.state = "FINISHED"
+        # Highest-priority ready thread runs first; ties break on declaration order.
+        order = {t.id: i for i, t in enumerate(process.threads.values())}
+        while True:
+            ready = [
+                t
+                for t in process.threads.values()
+                if t.state == "PENDING"
+                and all(
+                    process.threads.get(process.id + "/" + dep, ThreadInstance("", "", "", "", {})).state == "FINISHED"
+                    for dep in t.depends_on
+                )
+            ]
+            if not ready:
+                break
+            ready.sort(key=lambda t: (-t.priority, order.get(t.id, 0)))
+            thread = ready[0]
+            handler = self.handlers.get(thread.handler)
+            if handler is None:
+                thread.state, thread.result = "FINISHED", {"handler": thread.handler, "parameters": thread.parameters}
+            else:
+                thread.state, thread.attempts = "RUNNING", thread.attempts + 1
+                try:
+                    thread.result = handler(thread, self)
+                    thread.state = "FINISHED"
+                except Exception as exc:  # deterministic terminal state for orchestration errors
+                    thread.state, thread.error = "FAILED", str(exc)
+            self.bus.publish(Event("fina.thread." + thread.state.lower(), {"thread_id": thread.id, "result": thread.result}, process_id=process.id, thread_id=thread.id))
+        if all(t.state in ("FINISHED", "CANCELLED") for t in process.threads.values()):
+            process.state = "FINISHED"
 
     def snapshot(self, process_id: Optional[str] = None) -> List[Dict[str, Any]]:
         processes = [self.processes[process_id]] if process_id else list(self.processes.values())
-        return [{"id": p.id, "name": p.name, "state": p.state, "parameters": copy.deepcopy(p.parameters), "threads": [{"id": t.id, "name": t.name, "handler": t.handler, "state": t.state, "result": t.result, "error": t.error, "attempts": t.attempts} for t in p.threads.values()]} for p in processes]
+        return [{"id": p.id, "name": p.name, "state": p.state, "parameters": copy.deepcopy(p.parameters), "threads": [{"id": t.id, "name": t.name, "handler": t.handler, "state": t.state, "result": t.result, "error": t.error, "attempts": t.attempts, "priority": t.priority} for t in p.threads.values()]} for p in processes]
 
 
 def render_parameters(value: Any, parameters: Dict[str, Any]) -> Any:

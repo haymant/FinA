@@ -1,0 +1,50 @@
+api_version: fina/v1
+kind: FinaProcess
+metadata:
+  name: fina-risk-augment-to-olap
+  version: '1'
+parameters:
+  eval_datetime: ${eval_datetime}
+  count: 200
+  seed: 20260909
+  paths: 30000
+threads:
+  # ETL: cloned + permuted economics (highest priority — feed the pipeline first)
+  - name: augment
+    handler: fina-etl.augment_termsheet
+    priority: 9
+    parameters:
+      count: ${count}
+      seed: ${seed}
+  - name: compile
+    handler: fina-etl.compile_pricing_requests
+    depends_on: [augment]
+    priority: 8
+    parameters:
+      count: ${count}
+      seed: ${seed}
+  # Compute: price the batch (consumes the compiled requests) and persist risk_wide/risk_long
+  - name: risk
+    handler: fina-risk.risk_batch
+    depends_on: [compile]
+    priority: 5
+    parameters:
+      risk_request:
+        use_compiled: true
+        instruments: ${count}
+        paths: ${paths}
+        seed: ${seed}
+        persist: true
+  # Analysis: query the shared store (fina-olap / fina-table read the same location)
+  - name: olap
+    handler: fina-olap.olap_query
+    depends_on: [risk]
+    priority: 4
+    parameters:
+      olap_query:
+        dataset: risk_wide
+        rowGroupCols:
+          - {id: portfolio_id, field: portfolio_id}
+        valueCols:
+          - {id: delta, field: delta, aggFunc: sum}
+        groupKeys: []
