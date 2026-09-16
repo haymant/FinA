@@ -7,3 +7,6 @@
 [submodule "fina-olap"]
 	path = fina-olap
 	url = https://github.com/haymant/fina-olap.git
+[submodule "finap"]
+	path = finap
+	url = https://github.com/haymant/finap.git
